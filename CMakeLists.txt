@@ -44,16 +44,9 @@ set(REACORD_SOURCES
     src/ui/settings_dialog.hpp
 )
 
-# Cockos WDL and SWELL integration
 if(WIN32)
-    # Windows native resources
     list(APPEND REACORD_SOURCES
         src/ui/reacord.rc
-    )
-else()
-    # macOS and Linux use SWELL (Simple Windows Emulation Layer)
-    list(APPEND REACORD_SOURCES
-        deps/wdl/WDL/swell/swell-modstub.mm
     )
 endif()
 
@@ -75,11 +68,10 @@ target_include_directories(reaper_reacord PRIVATE
     deps/wdl/WDL
 )
 
-# Compiler definitions & options
+# Compiler definitions
 target_compile_definitions(reaper_reacord PRIVATE
     REACORD_VERSION="1.0.0"
-    REAPERAPI_MINIMAL
-    REACORD_CLIENT_ID_DEFAULT="123456789012345678" # Default template ID
+    REACORD_CLIENT_ID_DEFAULT="123456789012345678"
 )
 
 if(WIN32)
@@ -95,16 +87,15 @@ if(WIN32)
         user32
         gdi32
     )
+    set_target_properties(reaper_reacord PROPERTIES
+        SUFFIX ".dll"
+    )
 elseif(APPLE)
     target_compile_options(reaper_reacord PRIVATE
         -fvisibility=hidden
         -Wall
         -Wextra
         -O3
-    )
-    target_link_libraries(reaper_reacord PRIVATE
-        "-framework Cocoa"
-        "-framework Carbon"
     )
     set_target_properties(reaper_reacord PROPERTIES
         SUFFIX ".dylib"

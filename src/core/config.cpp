@@ -1,9 +1,7 @@
 #include "config.hpp"
+#include "reaper/reaper_api.h"
 #include <cstdlib>
 #include <cstring>
-
-// Include minimal REAPER functions
-#include "reaper_plugin_functions.h"
 
 namespace ReaCord {
 

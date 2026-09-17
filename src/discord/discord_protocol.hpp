@@ -4,6 +4,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cstring>
+#include <cstdio>
 
 namespace ReaCord {
 namespace Discord {
@@ -45,7 +47,7 @@ inline std::string EscapeJsonString(const std::string& input) {
             default:
                 if (static_cast<unsigned char>(c) < 0x20) {
                     char buf[8];
-                    snprintf(buf, sizeof(buf), "\\u%04x", static_cast<unsigned char>(c));
+                    std::snprintf(buf, sizeof(buf), "\\u%04x", static_cast<unsigned char>(c));
                     out += buf;
                 } else {
                     out += c;
@@ -149,7 +151,7 @@ inline std::vector<uint8_t> PackMessage(Opcode opcode, const std::string& payloa
 
     // Payload
     if (len > 0) {
-        memcpy(buffer.data() + 8, payload.data(), len);
+        std::memcpy(buffer.data() + 8, payload.data(), len);
     }
 
     return buffer;

@@ -1,6 +1,6 @@
 #include "reaper_observer.hpp"
+#include "reaper/reaper_api.h"
 #include "core/state_snapshot.hpp"
-#include "reaper_plugin_functions.h"
 #include <ctime>
 #include <cmath>
 #include <sstream>

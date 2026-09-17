@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef IDC_STATIC
+#define IDC_STATIC (-1)
+#endif
+
 #define IDD_REACORD_SETTINGS       1001
 #define IDC_ENABLE                 1002
 #define IDC_INCOGNITO              1003

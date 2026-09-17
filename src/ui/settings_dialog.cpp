@@ -1,8 +1,11 @@
 #include "settings_dialog.hpp"
-#include "resource.h"
 #include "core/config.hpp"
 #include "discord/discord_ipc.hpp"
+
+#ifdef _WIN32
+#include <windows.h>
 #include <commctrl.h>
+#include "resource.h"
 
 namespace ReaCord {
 
@@ -97,9 +100,30 @@ static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
     return FALSE;
 }
 
-void ShowSettingsDialog(HINSTANCE hInstance, HWND parentHwnd) {
+void ShowSettingsDialog(REAPER_PLUGIN_HINSTANCE hInstance, HWND parentHwnd) {
     DialogBoxParam(hInstance, MAKEINTRESOURCE(IDD_REACORD_SETTINGS), parentHwnd, DialogProc, 0);
 }
 
 } // namespace UI
 } // namespace ReaCord
+
+#else // Non-Windows (macOS & Linux)
+
+#include "reaper/reaper_api.h"
+
+namespace ReaCord {
+
+extern Discord::Client g_discord_client;
+
+namespace UI {
+
+void ShowSettingsDialog(REAPER_PLUGIN_HINSTANCE hInstance, HWND parentHwnd) {
+    if (MB) {
+        MB("To configure ReaCord, please run 'ReaCord_Settings_ImGui.lua' from REAPER's Action List, or edit your preferences in reaper.ini under [ReaCord].", "ReaCord Settings", 0);
+    }
+}
+
+} // namespace UI
+} // namespace ReaCord
+
+#endif

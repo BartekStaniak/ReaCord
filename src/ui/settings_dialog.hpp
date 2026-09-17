@@ -1,15 +1,11 @@
 #pragma once
 
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include "swell/swell.h"
-#endif
+#include "reaper_plugin.h"
 
 namespace ReaCord {
 namespace UI {
 
-void ShowSettingsDialog(HINSTANCE hInstance, HWND parentHwnd);
+void ShowSettingsDialog(REAPER_PLUGIN_HINSTANCE hInstance, HWND parentHwnd);
 
 } // namespace UI
 } // namespace ReaCord

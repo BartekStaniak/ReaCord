@@ -1,7 +1,7 @@
 #include "core/config.hpp"
 #include "discord/discord_ipc.hpp"
-#include "reaper_plugin.h"
-#include "reaper_plugin_functions.h"
+#include "reaper/reaper_api.h"
+#include <cstdlib>
 #include <cstring>
 #include <string>
 
@@ -47,9 +47,9 @@ bool API_ReaCord_SetConfig(const char* key, const char* val) {
     Config& cfg = Config::Instance();
     if (strcmp(key, "enabled") == 0) cfg.enabled = (strcmp(val, "1") == 0);
     else if (strcmp(key, "incognito") == 0) cfg.incognito = (strcmp(val, "1") == 0);
-    else if (strcmp(key, "project_name_mode") == 0) cfg.project_name_mode = static_cast<ProjectNameMode>(atoi(val));
-    else if (strcmp(key, "session_time_mode") == 0) cfg.session_time_mode = static_cast<SessionTimeMode>(atoi(val));
-    else if (strcmp(key, "play_state_mode") == 0) cfg.play_state_mode = static_cast<PlayStateMode>(atoi(val));
+    else if (strcmp(key, "project_name_mode") == 0) cfg.project_name_mode = static_cast<ProjectNameMode>(std::atoi(val));
+    else if (strcmp(key, "session_time_mode") == 0) cfg.session_time_mode = static_cast<SessionTimeMode>(std::atoi(val));
+    else if (strcmp(key, "play_state_mode") == 0) cfg.play_state_mode = static_cast<PlayStateMode>(std::atoi(val));
     else if (strcmp(key, "show_track_count") == 0) cfg.show_track_count = (strcmp(val, "1") == 0);
     else if (strcmp(key, "client_id") == 0) {
         cfg.client_id = val;
