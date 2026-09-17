@@ -5,6 +5,21 @@
       <metadata>
         <link rel="website">https://github.com/BartekStaniak/ReaCord</link>
       </metadata>
+      <version name="1.0.1" author="Bartek Staniak" time="2026-09-17T15:25:00Z">
+        <changelog><![CDATA[Security & Asset Release:
++ Security hardening: named pipe client impersonation defense (SECURITY_SQOS_PRESENT)
++ Safe bounded memory allocation for incoming IPC frames
++ Thread-local string buffers for ReaScript C API exports
++ Robust numeric sanitization for custom Discord Client IDs
++ Compiler & linker exploit mitigations (ASLR, DEP, Control Flow Guard, Stack Canaries)
++ New official diagonal-split ReaCord emblem combining REAPER and Discord
++ Terms of Service & Privacy Policy for Discord Developer Portal verification]]></changelog>
+        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.1/reaper_reacord64.dll</source>
+        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.1/reaper_reacord.dylib</source>
+        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.1/reaper_reacord.dylib</source>
+        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.1/reaper_reacord-x86_64.so</source>
+        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/main/scripts/ReaCord_Settings_ImGui.lua</source>
+      </version>
       <version name="1.0.0" author="Bartek Staniak" time="2026-09-17T11:00:00Z">
         <changelog><![CDATA[Initial Release:
 + Native C++ Discord Rich Presence extension for REAPER

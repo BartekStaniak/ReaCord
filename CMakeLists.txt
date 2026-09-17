@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(ReaCord VERSION 1.0.0 LANGUAGES C CXX)
+project(ReaCord VERSION 1.0.1 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -70,7 +70,7 @@ target_include_directories(reaper_reacord PRIVATE
 
 # Compiler definitions
 target_compile_definitions(reaper_reacord PRIVATE
-    REACORD_VERSION="1.0.0"
+    REACORD_VERSION="1.0.1"
     REACORD_CLIENT_ID_DEFAULT="1462972195658534965"
 )
 
