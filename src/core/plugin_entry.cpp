@@ -48,6 +48,35 @@ static bool ReaCord_HookCommand(int command, int /*flag*/) {
     return false;
 }
 
+static void ReaCord_MenuHook(const char* menuidstr, void* menu, int /*flag*/) {
+    if (!menuidstr || strcmp(menuidstr, "Main extensions") != 0) return;
+    if (!menu || !g_cmd_settings) return;
+
+    HMENU hMenu = static_cast<HMENU>(menu);
+    int count = GetMenuItemCount(hMenu);
+    for (int i = 0; i < count; ++i) {
+        if (static_cast<int>(GetMenuItemID(hMenu, i)) == g_cmd_settings) {
+            return; // Item already present
+        }
+    }
+
+#ifdef _WIN32
+    MENUITEMINFOA mi = { sizeof(MENUITEMINFOA) };
+    mi.fMask = MIIM_TYPE | MIIM_ID;
+    mi.fType = MFT_STRING;
+    mi.wID = static_cast<UINT>(g_cmd_settings);
+    mi.dwTypeData = const_cast<char*>("ReaCord Settings...");
+    InsertMenuItemA(hMenu, count, TRUE, &mi);
+#else
+    MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
+    mi.fMask = MIIM_TYPE | MIIM_ID;
+    mi.fType = MFT_STRING;
+    mi.wID = static_cast<UINT>(g_cmd_settings);
+    mi.dwTypeData = const_cast<char*>("ReaCord Settings...");
+    InsertMenuItem(hMenu, count, TRUE, &mi);
+#endif
+}
+
 // Forward declaration from api_export.cpp
 void RegisterApiFunctions(reaper_plugin_info_t* rec);
 
@@ -61,6 +90,11 @@ extern "C" REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(
 
     if (!rec) {
         // REAPER is shutting down or unloading extension
+        if (plugin_register) {
+            plugin_register("-hookcustommenu", (void*)ReaCord::ReaCord_MenuHook);
+            plugin_register("-timer", (void*)ReaCord::ReaCord_TimerHook);
+            plugin_register("-hookcommand", (void*)ReaCord::ReaCord_HookCommand);
+        }
         ReaCord::Observer::Instance().Shutdown();
         ReaCord::g_discord_client.Stop();
         return 0;
@@ -88,6 +122,12 @@ extern "C" REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(
     rec->Register("gaccel", &ReaCord::g_accel_incognito);
 
     rec->Register("hookcommand", (void*)ReaCord::ReaCord_HookCommand);
+
+    // Register Menu Hook and ensure Extensions main menu exists
+    rec->Register("hookcustommenu", (void*)ReaCord::ReaCord_MenuHook);
+    if (AddExtensionsMainMenu) {
+        AddExtensionsMainMenu();
+    }
 
     // 3. Register ReaScript C API exports
     ReaCord::RegisterApiFunctions(rec);

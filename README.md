@@ -65,17 +65,24 @@ Unlike previous scripts or third-party wrappers, **ReaCord runs entirely inside 
 
 ## ⚙️ Configuration & GUI
 
-ReaCord provides two ways to configure your presence:
+ReaCord provides multiple ways to configure your presence:
 
-### 1. Native Settings Dialog
-Open REAPER's **Action List** (`?` key), search for `ReaCord: Open Settings...`, and press **Run**.
+### 1. Top Menu Bar (Extensions Menu)
+Navigate directly to REAPER's top menu bar:  
+👉 **Extensions > ReaCord Settings...**
 
-### 2. ReaImGui Modern Interface (Optional)
-If you have **ReaImGui** installed, run the companion script:
+### 2. Action List & Hotkeys
+Open REAPER's **Action List** (`?` key), search for `ReaCord: Open Settings...`, and press **Run**. You can also bind this action to any keyboard shortcut or toolbar icon.
+
+ReaCord also includes a quick stealth action:
+- `ReaCord: Toggle Incognito Mode`
+
+### 3. ReaImGui Modern Interface (Optional)
+If you have **ReaImGui** installed (available via ReaPack), run the companion script:
 ```text
 scripts/ReaCord_Settings_ImGui.lua
 ```
-This opens a floating window displaying real-time connection status and a **live Discord card preview**.
+This opens a modern dark floating window displaying real-time connection telemetry and an interactive **live Discord profile card preview**.
 
 ---
 
@@ -123,7 +130,7 @@ See the complete step-by-step guide in [docs/DISCORD_APP_SETUP.md](docs/DISCORD_
 
 ```bash
 # 1. Clone repository with submodules
-git clone --recursive https://github.com/your-org/ReaCord.git
+git clone --recursive https://github.com/BartekStaniak/ReaCord.git
 cd ReaCord
 
 # 2. Configure build
@@ -137,7 +144,14 @@ The compiled binary will be placed in `build/Release/` (Windows) or `build/` (ma
 
 ---
 
+## 👤 Author
+
+Developed by **Bartek Staniak**  
+GitHub: [@BartekStaniak](https://github.com/BartekStaniak)
+
+---
+
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE) by Bartek Staniak.  
 Cockos WDL and REAPER SDK are licensed under their respective Cockos licenses.

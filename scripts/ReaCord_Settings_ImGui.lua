@@ -1,5 +1,5 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
--- @author ReaCord Team
+-- @author Bartek Staniak
 -- @version 1.0.0
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.

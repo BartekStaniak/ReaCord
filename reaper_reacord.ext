@@ -1,5 +1,5 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
-@author ReaCord Team
+@author Bartek Staniak
 @version 1.0.0
 @changelog
   + Initial Release: Native C++ Discord Rich Presence for Cockos REAPER
