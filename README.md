@@ -1,9 +1,5 @@
 # ReaCord 🎧💬
 
-<p align="center">
-  <img src="assets/discord/reacord_logo.png" width="140" alt="ReaCord Logo" />
-</p>
-
 ![ReaCord Banner](assets/discord/banner.jpg)
 
 > **Native, Ultra-Lightweight Discord Rich Presence for Cockos REAPER DAW**  
