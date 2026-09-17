@@ -94,7 +94,7 @@ elseif(APPLE)
     target_compile_options(reaper_reacord PRIVATE
         -fvisibility=hidden
         -Wall
-        -Wextra
+        -Wno-unused-parameter
         -O3
     )
     set_target_properties(reaper_reacord PROPERTIES
@@ -107,7 +107,7 @@ else()
         -fvisibility=hidden
         -fPIC
         -Wall
-        -Wextra
+        -Wno-unused-parameter
         -O3
     )
     target_link_libraries(reaper_reacord PRIVATE

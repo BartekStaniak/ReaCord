@@ -1,5 +1,24 @@
 #pragma once
 
+#include <cstdint>
+#include <cstddef>
+#include <string>
+#include <vector>
+#include <chrono>
+#include <thread>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
+#include <cmath>
+#include <ctime>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #define REAPERAPI_MINIMAL
 
 #define REAPERAPI_WANT_plugin_register

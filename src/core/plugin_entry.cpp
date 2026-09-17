@@ -34,7 +34,7 @@ static void ReaCord_TimerHook() {
     Observer::Instance().OnTimerTick();
 }
 
-static bool ReaCord_HookCommand(int command, int flag) {
+static bool ReaCord_HookCommand(int command, int /*flag*/) {
     if (command && command == g_cmd_settings) {
         UI::ShowSettingsDialog(g_hInstance, GetMainHwnd ? GetMainHwnd() : nullptr);
         return true;
@@ -79,11 +79,11 @@ extern "C" REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(
     ReaCord::Config::Instance().Load();
 
     // 2. Register Actions & Hotkeys
-    ReaCord::g_cmd_settings = static_cast<int>(reinterpret_cast<INT_PTR>(rec->Register("command_id", (void*)"REACORD_OPEN_SETTINGS")));
+    ReaCord::g_cmd_settings = rec->Register("command_id", (void*)"REACORD_OPEN_SETTINGS");
     ReaCord::g_accel_settings.accel.cmd = static_cast<WORD>(ReaCord::g_cmd_settings);
     rec->Register("gaccel", &ReaCord::g_accel_settings);
 
-    ReaCord::g_cmd_incognito = static_cast<int>(reinterpret_cast<INT_PTR>(rec->Register("command_id", (void*)"REACORD_TOGGLE_INCOGNITO")));
+    ReaCord::g_cmd_incognito = rec->Register("command_id", (void*)"REACORD_TOGGLE_INCOGNITO");
     ReaCord::g_accel_incognito.accel.cmd = static_cast<WORD>(ReaCord::g_cmd_incognito);
     rec->Register("gaccel", &ReaCord::g_accel_incognito);
 
