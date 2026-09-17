@@ -42,7 +42,7 @@ Unlike previous scripts or third-party wrappers, **ReaCord runs entirely inside 
 2. In the top menu, navigate to **Extensions > ReaPack > Import Repositories...**
 3. Paste the ReaCord repository URL:
    ```text
-   https://github.com/your-org/readiscord-reapack/raw/master/index.xml
+   https://raw.githubusercontent.com/BartekStaniak/ReaCord/main/index.xml
    ```
 4. Go to **Extensions > ReaPack > Browse Packages...**
 5. Search for `ReaCord`, right-click and select **Install**.
@@ -52,7 +52,7 @@ Unlike previous scripts or third-party wrappers, **ReaCord runs entirely inside 
 
 ### Method 2: Manual Installation
 
-1. Download the latest pre-compiled binary for your operating system from [Releases](https://github.com/your-org/ReaCord/releases):
+1. Download the latest pre-compiled binary for your operating system from [Releases](https://github.com/BartekStaniak/ReaCord/releases):
    - **Windows (x64)**: `reaper_reacord64.dll`
    - **macOS (Universal - Apple Silicon & Intel)**: `reaper_reacord.dylib`
    - **Linux (x86_64)**: `reaper_reacord-x86_64.so`
