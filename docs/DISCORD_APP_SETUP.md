@@ -25,7 +25,8 @@
 ## Step 3: Configure Rich Presence Art Assets
 
 Pre-rendered 512x512 transparent PNG assets are provided in this repository under the [`assets/discord/`](../assets/discord) folder:
-- `assets/discord/reaper_logo.png`
+- `assets/discord/reacord_logo.png` (hybrid emblem)
+- `assets/discord/reaper_logo.png` (classic REAPER pick)
 - `assets/discord/play.png`
 - `assets/discord/record.png`
 - `assets/discord/pause.png`
@@ -36,7 +37,7 @@ To upload them to your Discord application:
 1. In the left navigation menu of the Developer Portal, go to **Rich Presence** > **Art Assets**.
 2. Click **Add Image(s)** and upload each asset with its exact key name:
    - **Large Image Asset**:
-     - Key Name: `reaper_logo` (Upload `assets/discord/reaper_logo.png`)
+     - Key Name: `reaper_logo` (Upload `assets/discord/reacord_logo.png` or `assets/discord/reaper_logo.png`)
    - **Small Badge Assets**:
      - Key Name: `play` (Upload `assets/discord/play.png`)
      - Key Name: `record` (Upload `assets/discord/record.png`)

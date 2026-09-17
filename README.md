@@ -1,5 +1,9 @@
 # ReaCord 🎧💬
 
+<p align="center">
+  <img src="assets/discord/reacord_logo.png" width="140" alt="ReaCord Logo" />
+</p>
+
 ![ReaCord Banner](assets/discord/banner.jpg)
 
 > **Native, Ultra-Lightweight Discord Rich Presence for Cockos REAPER DAW**  
@@ -93,7 +97,8 @@ This opens a modern dark floating window displaying real-time connection telemet
 ReaCord works **100% plug-and-play out of the box** using the official pre-configured REAPER Application ID (`1462972195658534965`).
 
 If you wish to create your own custom Discord application, custom app name, or custom icons, pre-rendered 512x512 transparent PNG assets are provided directly in [`assets/discord/`](assets/discord/):
-- `reaper_logo.png` (large icon)
+- `reacord_logo.png` (hybrid REAPER / Discord diagonal split emblem)
+- `reaper_logo.png` (classic REAPER guitar pick)
 - `play.png` (playback badge)
 - `record.png` (recording badge)
 - `pause.png` (pause badge)
