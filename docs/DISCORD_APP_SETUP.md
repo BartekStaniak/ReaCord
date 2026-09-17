@@ -14,11 +14,20 @@
 
 ---
 
-## Step 2: Copy your Client ID
+## Step 2: Application Details & Verification (Terms & Privacy)
 
 1. In the left navigation menu, select **General Information**.
-2. Under the application name, find the **Application ID** (also called Client ID).
-3. Click **Copy** to copy this numerical ID to your clipboard.
+2. Under the application name, find the **Application ID** (also called Client ID) and copy it.
+3. For Discord App Verification and profile compliance, paste the following URLs into the respective fields:
+   - **Terms of Service URL:**
+     ```text
+     https://github.com/BartekStaniak/ReaCord/blob/main/TERMS_OF_SERVICE.md
+     ```
+   - **Privacy Policy URL:**
+     ```text
+     https://github.com/BartekStaniak/ReaCord/blob/main/PRIVACY_POLICY.md
+     ```
+4. Click **Save Changes** at the bottom of the page.
 
 ---
 

@@ -156,7 +156,8 @@ GitHub: [@BartekStaniak](https://github.com/BartekStaniak)
 
 ---
 
-## 📄 License
+## 📄 License & Legal
 
-This project is licensed under the [MIT License](LICENSE) by Bartek Staniak.  
-Cockos WDL and REAPER SDK are licensed under their respective Cockos licenses.
+- **License:** Licensed under the [MIT License](LICENSE) by Bartek Staniak. Cockos WDL and REAPER SDK are licensed under their respective Cockos licenses.
+- **Terms of Service:** [TERMS_OF_SERVICE.md](TERMS_OF_SERVICE.md)
+- **Privacy Policy:** [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
