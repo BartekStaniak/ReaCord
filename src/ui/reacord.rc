@@ -1,0 +1,31 @@
+#include "resource.h"
+#include <windows.h>
+
+IDD_REACORD_SETTINGS DIALOGEX 0, 0, 280, 220
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "ReaCord - Discord Rich Presence Settings"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Enable Discord Rich Presence",IDC_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,12,180,10
+    CONTROL         "Incognito Mode (Hide all project & track details)",IDC_INCOGNITO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,26,220,10
+    
+    GROUPBOX        "Privacy & Metadata Opt-Ins",IDC_STATIC,10,44,260,104
+    LTEXT           "Project Name:",IDC_STATIC,18,60,65,8
+    COMBOBOX        IDC_COMBO_PROJ_NAME,90,58,165,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    
+    LTEXT           "Session Time:",IDC_STATIC,18,80,65,8
+    COMBOBOX        IDC_COMBO_SESSION_TIME,90,78,165,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    
+    LTEXT           "Play / Record State:",IDC_STATIC,18,100,70,8
+    COMBOBOX        IDC_COMBO_PLAY_STATE,90,98,165,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    
+    CONTROL         "Show Track Count",IDC_CHECK_TRACK_COUNT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,124,120,10
+    
+    GROUPBOX        "Discord Application Client ID",IDC_STATIC,10,154,260,36
+    EDITTEXT        IDC_EDIT_CLIENT_ID,18,168,244,14,ES_AUTOHSCROLL | WS_TABSTOP
+    
+    LTEXT           "Status: Disconnected",IDC_STATUS_TEXT,12,198,130,12
+    DEFPUSHBUTTON   "OK",IDOK,146,196,40,14
+    PUSHBUTTON      "Cancel",IDCANCEL,190,196,40,14
+    PUSHBUTTON      "Apply",IDC_APPLY,234,196,36,14
+END

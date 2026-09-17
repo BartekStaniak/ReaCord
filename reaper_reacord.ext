@@ -1,0 +1,29 @@
+@description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
+@author ReaCord Team
+@version 1.0.0
+@changelog
+  + Initial Release: Native C++ Discord Rich Presence for Cockos REAPER
+  + Zero external executables / background processes required
+  + Granular privacy opt-in controls (Project Name, Session Time, Play State, Track Count)
+  + One-click Incognito stealth mode
+  + Dual GUI: Native SWELL Dialog + Hardware-Accelerated ReaImGui Companion
+  + Asynchronous non-blocking architecture with zero audio performance impact
+@provides
+  [windows32] reaper_reacord32.dll
+  [windows64] reaper_reacord64.dll
+  [windows-arm64] reaper_reacord-arm64.dll
+  [darwin64] reaper_reacord.dylib
+  [darwin-arm64] reaper_reacord.dylib
+  [linux-x86_64] reaper_reacord-x86_64.so
+  [linux-aarch64] reaper_reacord-aarch64.so
+  [main=main,gui] scripts/ReaCord_Settings_ImGui.lua
+@about
+  # ReaCord
+  Ultra-lightweight native Discord Rich Presence integration for Cockos REAPER.
+
+  ## Highlights
+  - Runs natively inside REAPER as an extension with zero external helper programs.
+  - Asynchronous background worker thread ensures zero CPU load and zero audio buffer interference.
+  - Granular privacy options: opt-in to show/hide project name, session time, playback state, and track counts.
+  - Instant Incognito toggle for stealth sessions.
+  - Native settings dialog + modern ReaImGui interface with live Discord card preview.

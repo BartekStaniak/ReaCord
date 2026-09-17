@@ -1,0 +1,53 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-matrix:
+    name: Build on ${{ matrix.os }} (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x64
+            cmake_args: -A x64
+          - os: macos-latest
+            arch: universal
+            cmake_args: -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+          - os: ubuntu-latest
+            arch: x86_64
+            cmake_args: ""
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Linux Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev
+
+      - name: Configure CMake
+        run: cmake -B build ${{ matrix.cmake_args }} -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build ReaCord
+        run: cmake --build build --config Release
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: reacord-${{ runner.os }}-${{ matrix.arch }}
+          path: |
+            build/Release/*.dll
+            build/*.dylib
+            build/*.so
+          if-no-files-found: ignore

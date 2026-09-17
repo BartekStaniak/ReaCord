@@ -1,0 +1,35 @@
+# Build directories
+build/
+bin/
+out/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# Visual Studio & IDEs
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+.vscode/
+.idea/
+
+# Compiled binaries and libraries
+*.dll
+*.so
+*.dylib
+*.exp
+*.lib
+*.pdb
+*.ilk
+
+# REAPER User plugins and test artifacts
+*.rpp-bak
+*.RPP-bak
+*.rpp-undo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

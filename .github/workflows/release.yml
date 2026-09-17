@@ -1,0 +1,98 @@
+name: Release and ReaPack Index
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build Binary (${{ matrix.os }} - ${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x64
+            cmake_args: -A x64
+            binary: build/Release/reaper_reacord64.dll
+          - os: macos-latest
+            arch: universal
+            cmake_args: -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+            binary: build/reaper_reacord.dylib
+          - os: ubuntu-latest
+            arch: x86_64
+            cmake_args: ""
+            binary: build/reaper_reacord-x86_64.so
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Linux Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev
+
+      - name: Configure CMake
+        run: cmake -B build ${{ matrix.cmake_args }} -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build ReaCord
+        run: cmake --build build --config Release
+
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.os }}-${{ matrix.arch }}
+          path: ${{ matrix.binary }}
+
+  publish-release:
+    name: Publish GitHub Release & ReaPack Index
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Download all built binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: release-binaries
+
+      - name: Move binaries to root for ReaPack packaging
+        run: |
+          mkdir -p dist
+          find release-binaries -type f \( -name "*.dll" -o -name "*.dylib" -o -name "*.so" \) -exec cp {} dist/ \;
+          ls -la dist/
+
+      - name: Set up Ruby for reapack-index
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install reapack-index
+        run: gem install reapack-index
+
+      - name: Generate ReaPack index.xml
+        run: |
+          reapack-index --amend --check
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*
+            index.xml
+            scripts/ReaCord_Settings_ImGui.lua
+          generate_release_notes: true
