@@ -30,7 +30,9 @@ struct Config {
     SessionTimeMode session_time_mode = SessionTimeMode::ProjectElapsed;
     PlayStateMode play_state_mode = PlayStateMode::DetailedBpm;
     bool show_track_count = true;
-    std::string client_id = "123456789012345678"; // Template default
+#define REACORD_DEFAULT_CLIENT_ID "1462972195658534965"
+
+    std::string client_id = REACORD_DEFAULT_CLIENT_ID; // Official ReaCord App ID
     std::string large_image_key = "reaper_logo";
     int idle_timeout_mins = 15;
 

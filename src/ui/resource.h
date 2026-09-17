@@ -14,3 +14,5 @@
 #define IDC_EDIT_CLIENT_ID         1008
 #define IDC_STATUS_TEXT            1009
 #define IDC_APPLY                  1010
+#define IDC_BTN_RESET_DEFAULT      1011
+#define IDC_BTN_HELP               1012

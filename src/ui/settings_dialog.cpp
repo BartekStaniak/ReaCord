@@ -5,6 +5,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <commctrl.h>
+#include <shellapi.h>
 #include "resource.h"
 
 namespace ReaCord {
@@ -48,7 +49,13 @@ static void PopulateDialog(HWND hwnd) {
     SetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_CLIENT_ID), cfg.client_id.c_str());
 
     // Status Text
-    std::string status = "Discord Status: " + g_discord_client.GetStatusString();
+    std::string discord_status = g_discord_client.GetStatusString();
+    std::string status = "Status: " + discord_status;
+    if (cfg.client_id == "123456789012345678") {
+        status = "Status: Template ID detected";
+    } else if (discord_status == "Disconnected") {
+        status += " (Discord open?)";
+    }
     SetWindowTextA(GetDlgItem(hwnd, IDC_STATUS_TEXT), status.c_str());
 }
 
@@ -65,6 +72,11 @@ static void SaveDialog(HWND hwnd) {
 
     char idBuf[128] = {0};
     GetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_CLIENT_ID), idBuf, sizeof(idBuf));
+    if (idBuf[0] == '\0') {
+        // Fall back to default official ID if user cleared it
+        strcpy(idBuf, REACORD_DEFAULT_CLIENT_ID);
+        SetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_CLIENT_ID), idBuf);
+    }
     if (cfg.client_id != idBuf) {
         cfg.client_id = idBuf;
         g_discord_client.SetClientId(cfg.client_id);
@@ -94,6 +106,14 @@ static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
                     SaveDialog(hwnd);
                     PopulateDialog(hwnd);
                     return TRUE;
+
+                case IDC_BTN_RESET_DEFAULT:
+                    SetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_CLIENT_ID), REACORD_DEFAULT_CLIENT_ID);
+                    return TRUE;
+
+                case IDC_BTN_HELP:
+                    ShellExecuteA(hwnd, "open", "https://github.com/BartekStaniak/ReaCord/blob/main/docs/DISCORD_APP_SETUP.md", NULL, NULL, SW_SHOWNORMAL);
+                    return TRUE;
             }
             break;
     }
@@ -119,7 +139,12 @@ namespace UI {
 
 void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
     if (MB) {
-        MB("To configure ReaCord, please run 'ReaCord_Settings_ImGui.lua' from REAPER's Action List, or edit your preferences in reaper.ini under [ReaCord].", "ReaCord Settings", 0);
+        std::string msg = "ReaCord Discord Rich Presence\n\n"
+                          "Status: " + g_discord_client.GetStatusString() + "\n"
+                          "Active App ID: " + Config::Instance().client_id + "\n\n"
+                          "ReaCord is running with the official REAPER Discord application.\n"
+                          "To configure privacy settings or view the live Discord card preview, run 'ReaCord_Settings_ImGui.lua' from REAPER's Action List.";
+        MB(msg.c_str(), "ReaCord Settings", 0);
     }
 }
 

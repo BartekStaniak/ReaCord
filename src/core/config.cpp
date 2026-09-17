@@ -35,7 +35,10 @@ void Config::Load() {
     session_time_mode = static_cast<SessionTimeMode>(std::atoi(ReadExt("session_time_mode", "1").c_str()));
     play_state_mode = static_cast<PlayStateMode>(std::atoi(ReadExt("play_state_mode", "2").c_str()));
     show_track_count = (ReadExt("show_track_count", "1") == "1");
-    client_id = ReadExt("client_id", "123456789012345678");
+    client_id = ReadExt("client_id", REACORD_DEFAULT_CLIENT_ID);
+    if (client_id.empty() || client_id == "123456789012345678") {
+        client_id = REACORD_DEFAULT_CLIENT_ID;
+    }
     large_image_key = ReadExt("large_image_key", "reaper_logo");
     idle_timeout_mins = std::atoi(ReadExt("idle_timeout_mins", "15").c_str());
 }

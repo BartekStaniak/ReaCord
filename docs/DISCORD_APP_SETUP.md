@@ -1,10 +1,10 @@
-# Discord Application Setup Guide for ReaCord
-
-This guide explains how to set up your own Discord Application to provide customized artwork, badges, and titles for your REAPER Discord Rich Presence integration.
+> [!NOTE]  
+> **ReaCord works 100% out-of-the-box!**  
+> ReaCord is pre-configured with the official REAPER Discord Application ID (`1462972195658534965`). You do **not** need to follow this guide unless you want custom application branding, custom names, or custom logos.
 
 ---
 
-## Step 1: Create a Discord Application
+## Step 1: Create a Discord Application (Optional)
 
 1. Open your browser and navigate to the **[Discord Developer Portal](https://discord.com/developers/applications)**.
 2. Log in with your Discord account.
@@ -24,21 +24,27 @@ This guide explains how to set up your own Discord Application to provide custom
 
 ## Step 3: Configure Rich Presence Art Assets
 
-To show the REAPER logo and transport icons (Play, Record, Pause, Stop) on your Discord profile:
+Pre-rendered 512x512 transparent PNG assets are provided in this repository under the [`assets/discord/`](../assets/discord) folder:
+- `assets/discord/reaper_logo.png`
+- `assets/discord/play.png`
+- `assets/discord/record.png`
+- `assets/discord/pause.png`
+- `assets/discord/stop.png`
 
-1. In the left navigation menu, go to **Rich Presence** > **Art Assets**.
-2. Click **Add Image(s)** to upload your assets:
+To upload them to your Discord application:
+
+1. In the left navigation menu of the Developer Portal, go to **Rich Presence** > **Art Assets**.
+2. Click **Add Image(s)** and upload each asset with its exact key name:
    - **Large Image Asset**:
-     - Key Name: `reaper_logo`
-     - Recommended Dimensions: 512x512 or 1024x1024 PNG (Square, transparent background).
+     - Key Name: `reaper_logo` (Upload `assets/discord/reaper_logo.png`)
    - **Small Badge Assets**:
-     - Key Name: `play` (Icon representing playback state)
-     - Key Name: `record` (Red circle or badge representing recording)
-     - Key Name: `pause` (Pause badge)
-     - Key Name: `stop` (Square badge representing stopped/idle state)
+     - Key Name: `play` (Upload `assets/discord/play.png`)
+     - Key Name: `record` (Upload `assets/discord/record.png`)
+     - Key Name: `pause` (Upload `assets/discord/pause.png`)
+     - Key Name: `stop` (Upload `assets/discord/stop.png`)
 3. Click **Save Changes** at the bottom of the page.
 
-> **Note**: Discord may take up to 5–10 minutes to propagate newly uploaded art assets across its CDN.
+> **Note**: Discord may take up to 5–10 minutes to propagate newly uploaded art assets across its global CDN.
 
 ---
 

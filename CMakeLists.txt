@@ -71,7 +71,7 @@ target_include_directories(reaper_reacord PRIVATE
 # Compiler definitions
 target_compile_definitions(reaper_reacord PRIVATE
     REACORD_VERSION="1.0.0"
-    REACORD_CLIENT_ID_DEFAULT="123456789012345678"
+    REACORD_CLIENT_ID_DEFAULT="1462972195658534965"
 )
 
 if(WIN32)
@@ -86,6 +86,7 @@ if(WIN32)
         advapi32
         user32
         gdi32
+        shell32
     )
     set_target_properties(reaper_reacord PROPERTIES
         SUFFIX ".dll"

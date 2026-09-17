@@ -45,8 +45,12 @@ local incognito = GetConfig("incognito", "0") == "1"
 local proj_mode = tonumber(GetConfig("project_name_mode", "1")) or 1
 local time_mode = tonumber(GetConfig("session_time_mode", "1")) or 1
 local play_mode = tonumber(GetConfig("play_state_mode", "2")) or 2
-local track_count = GetConfig("show_track_count", "1") == "1"
-local client_id = GetConfig("client_id", "123456789012345678")
+local DEFAULT_CLIENT_ID = "1462972195658534965"
+local client_id = GetConfig("client_id", DEFAULT_CLIENT_ID)
+if client_id == "" or client_id == "123456789012345678" then 
+    client_id = DEFAULT_CLIENT_ID 
+    SetConfig("client_id", client_id)
+end
 
 local proj_options = { "Hidden", "Project Name Only", "Full Path", "Generic (\"Working on a Project\")" }
 local time_options = { "Hidden", "Project Elapsed Time", "REAPER Uptime" }
@@ -122,9 +126,14 @@ local function Loop()
         -- Connection Status header
         local status_str = reaper.ReaCord_GetStatus and reaper.ReaCord_GetStatus() or "Unknown"
         local status_col = 0x949BA4FF
-        if status_str == "Connected" then status_col = 0x57F287FF
-        elseif status_str == "Connecting..." then status_col = 0xFEE75CFF
-        elseif status_str == "Disconnected" then status_col = 0xED4245FF end
+        if status_str == "Connected" then 
+            status_col = 0x57F287FF
+        elseif status_str == "Connecting..." then 
+            status_col = 0xFEE75CFF
+        elseif status_str == "Disconnected" then 
+            status_col = 0xED4245FF 
+            status_str = status_str .. " (Check if Discord app is open)"
+        end
 
         reaper.ImGui_Text(ctx, "Discord IPC Status: ")
         reaper.ImGui_SameLine(ctx)
@@ -183,6 +192,18 @@ local function Loop()
         reaper.ImGui_SeparatorText(ctx, "Application Settings")
         changed, client_id = reaper.ImGui_InputText(ctx, "Discord Client ID", client_id)
         if changed then SetConfig("client_id", client_id) end
+
+        reaper.ImGui_SameLine(ctx)
+        if reaper.ImGui_Button(ctx, "Default ID") then
+            client_id = DEFAULT_CLIENT_ID
+            SetConfig("client_id", client_id)
+        end
+
+        if client_id == "123456789012345678" then
+            reaper.ImGui_TextColored(ctx, 0xFEE75CFF, "Warning: Template Client ID detected! Click 'Default ID' to use official ReaCord app.")
+        else
+            reaper.ImGui_TextColored(ctx, 0x80848EFF, "Default: Official REAPER App (" .. DEFAULT_CLIENT_ID .. ")")
+        end
 
         reaper.ImGui_Spacing(ctx)
         RenderDiscordPreview()

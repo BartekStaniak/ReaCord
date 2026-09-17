@@ -86,16 +86,18 @@ This opens a modern dark floating window displaying real-time connection telemet
 
 ---
 
-## 🖼️ Custom Discord Application & Artwork Setup
+## 🖼️ Discord Application & Artwork Setup
 
-ReaCord works out of the box with default artwork, but you can also use your own Discord Application ID and custom logos!
+ReaCord works **100% plug-and-play out of the box** using the official pre-configured REAPER Application ID (`1462972195658534965`).
 
-See the complete step-by-step guide in [docs/DISCORD_APP_SETUP.md](docs/DISCORD_APP_SETUP.md) to set up custom images for:
-- `reaper_logo` (large icon)
-- `play` (playback badge)
-- `record` (recording badge)
-- `pause` (pause badge)
-- `stop` (idle badge)
+If you wish to create your own custom Discord application, custom app name, or custom icons, pre-rendered 512x512 transparent PNG assets are provided directly in [`assets/discord/`](assets/discord/):
+- `reaper_logo.png` (large icon)
+- `play.png` (playback badge)
+- `record.png` (recording badge)
+- `pause.png` (pause badge)
+- `stop.png` (idle/stopped badge)
+
+See the step-by-step guide in [docs/DISCORD_APP_SETUP.md](docs/DISCORD_APP_SETUP.md) for custom developer setup instructions.
 
 ---
 
