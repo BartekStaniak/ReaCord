@@ -16,14 +16,14 @@ const char* API_ReaCord_GetVersion() {
 
 // ReaScript API: ReaCord_GetStatus
 const char* API_ReaCord_GetStatus() {
-    static std::string status_buf;
+    thread_local std::string status_buf;
     status_buf = g_discord_client.GetStatusString();
     return status_buf.c_str();
 }
 
 // ReaScript API: ReaCord_GetConfig
 const char* API_ReaCord_GetConfig(const char* key) {
-    static std::string val_buf;
+    thread_local std::string val_buf;
     if (!key) return "";
 
     Config& cfg = Config::Instance();

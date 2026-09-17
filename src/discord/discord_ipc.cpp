@@ -171,7 +171,7 @@ bool Client::TryConnect() {
             0,
             nullptr,
             OPEN_EXISTING,
-            FILE_FLAG_OVERLAPPED,
+            FILE_FLAG_OVERLAPPED | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION,
             nullptr
         );
 
@@ -238,12 +238,14 @@ void Client::ReadIncoming() {
 
     DWORD bytes_avail = 0;
     if (PeekNamedPipe(static_cast<HANDLE>(pipe_handle_), nullptr, 0, nullptr, &bytes_avail, nullptr) && bytes_avail > 0) {
-        std::vector<uint8_t> buf(bytes_avail);
+        // Clamp maximum buffer size to 64 KB to prevent malicious allocation exhaustion
+        DWORD to_read = (bytes_avail > 65536) ? 65536 : bytes_avail;
+        std::vector<uint8_t> buf(to_read);
         OVERLAPPED ov = {0};
         ov.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
         if (ov.hEvent) {
             DWORD bytes_read = 0;
-            if (ReadFile(static_cast<HANDLE>(pipe_handle_), buf.data(), bytes_avail, &bytes_read, &ov) ||
+            if (ReadFile(static_cast<HANDLE>(pipe_handle_), buf.data(), to_read, &bytes_read, &ov) ||
                 GetLastError() == ERROR_IO_PENDING) {
                 WaitForSingleObject(ov.hEvent, 100);
             }
@@ -286,6 +288,10 @@ bool Client::TryConnect() {
         struct sockaddr_un addr;
         memset(&addr, 0, sizeof(addr));
         addr.sun_family = AF_UNIX;
+        if (sock_path.length() >= sizeof(addr.sun_path)) {
+            close(fd);
+            continue;
+        }
         strncpy(addr.sun_path, sock_path.c_str(), sizeof(addr.sun_path) - 1);
 
         int res = connect(fd, (struct sockaddr*)&addr, sizeof(addr));

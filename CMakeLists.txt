@@ -80,6 +80,20 @@ if(WIN32)
         NOMINMAX
         _CRT_SECURE_NO_WARNINGS
     )
+    if(MSVC)
+        target_compile_options(reaper_reacord PRIVATE
+            /GS          # Buffer Security Check
+            /guard:cf    # Control Flow Guard
+        )
+        target_link_options(reaper_reacord PRIVATE
+            /DYNAMICBASE # ASLR
+            /NXCOMPAT    # Data Execution Prevention (DEP)
+            /guard:cf    # Control Flow Guard (Linker)
+        )
+        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+            target_link_options(reaper_reacord PRIVATE /HIGHENTROPYVA)
+        endif()
+    endif()
     target_link_libraries(reaper_reacord PRIVATE
         ws2_32
         comctl32
@@ -94,6 +108,8 @@ if(WIN32)
 elseif(APPLE)
     target_compile_options(reaper_reacord PRIVATE
         -fvisibility=hidden
+        -fstack-protector-strong
+        -D_FORTIFY_SOURCE=2
         -Wall
         -Wno-unused-parameter
         -O3
@@ -106,10 +122,17 @@ else()
     # Linux
     target_compile_options(reaper_reacord PRIVATE
         -fvisibility=hidden
+        -fstack-protector-strong
+        -D_FORTIFY_SOURCE=2
         -fPIC
         -Wall
         -Wno-unused-parameter
         -O3
+    )
+    target_link_options(reaper_reacord PRIVATE
+        -Wl,-z,relro
+        -Wl,-z,now
+        -Wl,-z,noexecstack
     )
     target_link_libraries(reaper_reacord PRIVATE
         pthread

@@ -28,6 +28,14 @@ static void WriteExt(const char* key, const std::string& val) {
     }
 }
 
+static bool IsValidClientId(const std::string& id) {
+    if (id.empty() || id.length() < 17 || id.length() > 22) return false;
+    for (char c : id) {
+        if (!std::isdigit(static_cast<unsigned char>(c))) return false;
+    }
+    return true;
+}
+
 void Config::Load() {
     enabled = (ReadExt("enabled", "1") == "1");
     incognito = (ReadExt("incognito", "0") == "1");
@@ -36,7 +44,7 @@ void Config::Load() {
     play_state_mode = static_cast<PlayStateMode>(std::atoi(ReadExt("play_state_mode", "2").c_str()));
     show_track_count = (ReadExt("show_track_count", "1") == "1");
     client_id = ReadExt("client_id", REACORD_DEFAULT_CLIENT_ID);
-    if (client_id.empty() || client_id == "123456789012345678") {
+    if (!IsValidClientId(client_id) || client_id == "123456789012345678") {
         client_id = REACORD_DEFAULT_CLIENT_ID;
     }
     large_image_key = ReadExt("large_image_key", "reaper_logo");

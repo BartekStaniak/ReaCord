@@ -72,13 +72,22 @@ static void SaveDialog(HWND hwnd) {
 
     char idBuf[128] = {0};
     GetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_CLIENT_ID), idBuf, sizeof(idBuf));
-    if (idBuf[0] == '\0') {
-        // Fall back to default official ID if user cleared it
-        strcpy(idBuf, REACORD_DEFAULT_CLIENT_ID);
-        SetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_CLIENT_ID), idBuf);
+    
+    // Sanitize to digits only
+    std::string sanitized_id;
+    for (int i = 0; idBuf[i] != '\0'; ++i) {
+        if (isdigit(static_cast<unsigned char>(idBuf[i]))) {
+            sanitized_id += idBuf[i];
+        }
     }
-    if (cfg.client_id != idBuf) {
-        cfg.client_id = idBuf;
+
+    if (sanitized_id.empty() || sanitized_id == "123456789012345678") {
+        sanitized_id = REACORD_DEFAULT_CLIENT_ID;
+        SetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_CLIENT_ID), sanitized_id.c_str());
+    }
+
+    if (cfg.client_id != sanitized_id) {
+        cfg.client_id = sanitized_id;
         g_discord_client.SetClientId(cfg.client_id);
     }
 
