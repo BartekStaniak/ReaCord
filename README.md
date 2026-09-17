@@ -2,6 +2,12 @@
 
 ![ReaCord Banner](assets/discord/banner.jpg)
 
+[![Latest Release](https://img.shields.io/github/v/release/BartekStaniak/ReaCord?color=blue&label=release)](https://github.com/BartekStaniak/ReaCord/releases/latest)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/BartekStaniak/ReaCord/ci.yml?branch=main&label=build)](https://github.com/BartekStaniak/ReaCord/actions/workflows/ci.yml)
+![Platforms](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+[![ReaPack Compatible](https://img.shields.io/badge/ReaPack-compatible-brightgreen)](https://raw.githubusercontent.com/BartekStaniak/ReaCord/main/index.xml)
+[![License: MIT](https://img.shields.io/github/license/BartekStaniak/ReaCord?color=green)](LICENSE)
+
 > Lightweight Discord Rich Presence for Cockos REAPER. No external helper scripts, no background Node/Python processes, and zero audio thread impact.
 
 ---
