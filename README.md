@@ -1,52 +1,46 @@
-# ReaCord 🎧💬
+# ReaCord
 
 ![ReaCord Banner](assets/discord/banner.jpg)
 
-> **Native, Ultra-Lightweight Discord Rich Presence for Cockos REAPER DAW**  
-> Distributed via ReaPack • Zero external helper programs • Granular privacy opt-ins • Zero audio latency impact
+> Lightweight Discord Rich Presence for Cockos REAPER. No external helper scripts, no background Node/Python processes, and zero audio thread impact.
 
 ---
 
 ## Overview
 
-**ReaCord** is a native C++ REAPER extension plugin (`reaper_reacord`) that connects REAPER directly to the Discord desktop client via local IPC.
+Most Discord Rich Presence setups for REAPER rely on external Python scripts, Node.js bridges, or background utilities that sit in your system tray. ReaCord doesn't. It's a native C++ plugin (`reaper_reacord`) that runs directly inside REAPER and talks straight to Discord over local IPC.
 
-Unlike previous scripts or third-party wrappers, **ReaCord runs entirely inside REAPER without requiring any standalone background programs, Python installations, or Node.js runtimes**. It is designed from the ground up for professional audio workstations where CPU efficiency, memory economy, and zero DSP buffer interference are paramount.
-
----
-
-## ✨ Features
-
-- **🚀 Zero External Executables**: Pure native REAPER extension (`.dll` on Windows, `.dylib` on macOS, `.so` on Linux).
-- **📦 1-Click ReaPack Distribution**: Easily install, update, and manage directly through REAPER's ReaPack package manager.
-- **🛡️ Granular Privacy Controls**: You choose exactly what is visible to the world:
-  - **Project Title**: Choose between Full Filename, Name Only, Generic (*"Working on a Project"*), or completely Hidden.
-  - **Session Time**: Choose between Project Elapsed Time, REAPER Uptime, or Hidden.
-  - **Playback State**: Show detailed playback status with tempo (*"Playing @ 128 BPM"*), simple status (*"Recording"*), or Hidden.
-  - **Track Count**: Toggle track count display (*"• 24 Tracks"*).
-  - **🕵️ Incognito Mode**: Instant one-click stealth mode that masks all project and session information.
-- **⚡ Zero Performance Overhead**:
-  - Background worker thread communicates asynchronously using non-blocking I/O.
-  - REAPER's real-time audio thread is **never** touched or blocked.
-  - Consumes **< 2 MB RAM** and **< 0.01% CPU**.
-  - Intelligent dirty-state hashing and rate-limiting prevents unnecessary socket traffic.
-- **🎨 Dual Interface Options**:
-  - **Native REAPER Dialog (SWELL)**: Fast, native OS styling with zero dependencies.
-  - **ReaImGui Companion**: Modern hardware-accelerated dark UI with a **live interactive Discord profile card preview**.
+Because audio performance comes first, all presence updates run on a detached worker thread. The real-time audio engine is never touched, RAM usage stays under 2 MB, and you don't have to keep another console window open while working on a track.
 
 ---
 
-## 📥 Installation
+## Features
+
+- **Self-contained**: Native extension (`.dll` on Windows, `.dylib` on macOS, `.so` on Linux). No secondary helper apps, terminal windows, or interpreters to install.
+- **Audio-safe**: Presence updates run asynchronously on a low-priority background thread at ~0.6 Hz. The DSP/audio thread is never blocked.
+- **Low footprint**: Uses under 2 MB of memory and less than 0.01% CPU. Updates are hashed so packets are only sent when project state actually changes.
+- **Privacy controls**: Customize what your Discord profile shows:
+  - Project name: full filename, project name only, generic placeholder (*"Working on a Project"*), or hidden entirely.
+  - Session timer: project playback time, total REAPER uptime, or off.
+  - Playback status: show playback with tempo (*"Playing @ 128 BPM"*), simple state (*"Recording"*), or hidden.
+  - Track count: toggle on or off.
+  - One-click Incognito: an instant stealth action that hides all project details and track counts.
+- **Two configuration UIs**: A native REAPER settings window (built with SWELL) and an optional ReaImGui script with a live Discord preview card.
+- **ReaPack support**: Install once and get automatic updates directly through REAPER's package manager.
+
+---
+
+## Installation
 
 ### Method 1: Via ReaPack (Recommended)
 
 1. Open REAPER.
-2. In the top menu, navigate to **Extensions > ReaPack > Import Repositories...**
+2. Go to **Extensions > ReaPack > Import Repositories...**
 3. Paste the ReaCord repository URL:
    ```text
    https://raw.githubusercontent.com/BartekStaniak/ReaCord/main/index.xml
    ```
-4. Go to **Extensions > ReaPack > Browse Packages...**
+4. Open **Extensions > ReaPack > Browse Packages...**
 5. Search for `ReaCord`, right-click and select **Install**.
 6. Click **Apply** in the bottom-right corner and restart REAPER.
 
@@ -54,64 +48,64 @@ Unlike previous scripts or third-party wrappers, **ReaCord runs entirely inside 
 
 ### Method 2: Manual Installation
 
-1. Download the latest pre-compiled binary for your operating system from [Releases](https://github.com/BartekStaniak/ReaCord/releases):
+1. Download the pre-compiled binary for your operating system from [Releases](https://github.com/BartekStaniak/ReaCord/releases):
    - **Windows (x64)**: `reaper_reacord64.dll`
    - **macOS (Universal - Apple Silicon & Intel)**: `reaper_reacord.dylib`
    - **Linux (x86_64)**: `reaper_reacord-x86_64.so`
 2. In REAPER, go to **Options > Show REAPER resource path in explorer/finder**.
 3. Open the `UserPlugins` folder (create it if it doesn't exist).
-4. Copy the downloaded binary into `UserPlugins`.
+4. Drop the downloaded binary into `UserPlugins`.
 5. Restart REAPER.
 
 ---
 
-## ⚙️ Configuration & GUI
+## Configuration
 
 ReaCord provides multiple ways to configure your presence:
 
-### 1. Top Menu Bar (Extensions Menu)
-Navigate directly to REAPER's top menu bar:  
-👉 **Extensions > ReaCord Settings...**
+### 1. Extensions Menu
+Open REAPER's top menu bar and select:  
+**Extensions > ReaCord Settings...**
 
-### 2. Action List & Hotkeys
-Open REAPER's **Action List** (`?` key), search for `ReaCord: Open Settings...`, and press **Run**. You can also bind this action to any keyboard shortcut or toolbar icon.
+### 2. Action List & Shortcuts
+Press `?` to open REAPER's **Action List**, search for `ReaCord: Open Settings...`, and click **Run**. You can bind this action to any shortcut key or toolbar button.
 
-ReaCord also includes a quick stealth action:
+ReaCord also provides a toggle action for stealth mode:
 - `ReaCord: Toggle Incognito Mode`
 
-### 3. ReaImGui Modern Interface (Optional)
-If you have **ReaImGui** installed (available via ReaPack), run the companion script:
+### 3. ReaImGui Companion Script (Optional)
+If you have **ReaImGui** installed, you can launch the companion script from the Action List:
 ```text
 scripts/ReaCord_Settings_ImGui.lua
 ```
-This opens a modern dark floating window displaying real-time connection telemetry and an interactive **live Discord profile card preview**.
+This opens a floating window with live socket connection telemetry and a real-time preview of how your card looks in Discord.
 
 ---
 
-## 🖼️ Discord Application & Artwork Setup
+## Discord Application & Artwork
 
-ReaCord works **100% plug-and-play out of the box** using the official pre-configured REAPER Application ID (`1462972195658534965`).
+ReaCord works immediately using the default pre-configured REAPER Application ID (`1462972195658534965`).
 
-If you wish to create your own custom Discord application, custom app name, or custom icons, pre-rendered 512x512 transparent PNG assets are provided directly in [`assets/discord/`](assets/discord/):
+If you prefer to register your own custom Discord app or upload custom art, pre-rendered 512x512 transparent PNG assets are provided in [`assets/discord/`](assets/discord/):
 - `reacord_logo.png` (hybrid REAPER / Discord diagonal split emblem)
 - `reaper_logo.png` (classic REAPER guitar pick)
 - `play.png` (playback badge)
 - `record.png` (recording badge)
 - `pause.png` (pause badge)
-- `stop.png` (idle/stopped badge)
+- `stop.png` (idle badge)
 
-See the step-by-step guide in [docs/DISCORD_APP_SETUP.md](docs/DISCORD_APP_SETUP.md) for custom developer setup instructions.
+For full setup instructions, see [docs/DISCORD_APP_SETUP.md](docs/DISCORD_APP_SETUP.md).
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture
 
 ```
 [ REAPER Realtime Audio Engine ] ---> [ UNTOUCHED / ZERO OVERHEAD ]
                |
 [ REAPER Main Thread ] (Timer hook @ 0.6 Hz)
-               |  (Sanitizes state & applies privacy opt-ins)
-       [ Lock-Free Snapshot ]
+               |  (Sanitizes state & applies privacy options)
+        [ Lock-Free Snapshot ]
                |  (Double-buffered exchange)
 [ ReaCord Worker Thread ] (Asynchronous Event Loop)
                |  (Non-blocking rate-limiting & dirty hash check)
@@ -122,14 +116,14 @@ See the step-by-step guide in [docs/DISCORD_APP_SETUP.md](docs/DISCORD_APP_SETUP
 
 ---
 
-## 🔨 Building From Source
+## Building From Source
 
 ### Prerequisites
 - CMake 3.16+
-- C++17 compatible compiler:
+- C++17 compiler:
   - **Windows**: Visual Studio 2019/2022 (MSVC)
   - **macOS**: Xcode / Apple Clang
-  - **Linux**: GCC or Clang + GTK3 development headers (`sudo apt install libgtk-3-dev`)
+  - **Linux**: GCC or Clang + GTK3 headers (`sudo apt install libgtk-3-dev`)
 
 ### Build Steps
 
@@ -145,18 +139,18 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```
 
-The compiled binary will be placed in `build/Release/` (Windows) or `build/` (macOS/Linux).
+Compiled binaries are output to `build/Release/` (Windows) or `build/` (macOS/Linux).
 
 ---
 
-## 👤 Author
+## Author
 
 Developed by **Bartek Staniak**  
 GitHub: [@BartekStaniak](https://github.com/BartekStaniak)
 
 ---
 
-## 📄 License & Legal
+## License & Policies
 
 - **License:** Licensed under the [MIT License](LICENSE) by Bartek Staniak. Cockos WDL and REAPER SDK are licensed under their respective Cockos licenses.
 - **Terms of Service:** [TERMS_OF_SERVICE.md](TERMS_OF_SERVICE.md)
