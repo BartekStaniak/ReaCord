@@ -14,6 +14,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
 
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -40,3 +41,10 @@
 
 #include "reaper_plugin.h"
 #include "reaper_plugin_functions.h"
+
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif

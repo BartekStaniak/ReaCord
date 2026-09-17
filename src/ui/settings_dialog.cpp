@@ -100,7 +100,7 @@ static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
     return FALSE;
 }
 
-void ShowSettingsDialog(REAPER_PLUGIN_HINSTANCE hInstance, HWND parentHwnd) {
+void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
     DialogBoxParam(hInstance, MAKEINTRESOURCE(IDD_REACORD_SETTINGS), parentHwnd, DialogProc, 0);
 }
 
@@ -117,7 +117,7 @@ extern Discord::Client g_discord_client;
 
 namespace UI {
 
-void ShowSettingsDialog(REAPER_PLUGIN_HINSTANCE hInstance, HWND parentHwnd) {
+void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
     if (MB) {
         MB("To configure ReaCord, please run 'ReaCord_Settings_ImGui.lua' from REAPER's Action List, or edit your preferences in reaper.ini under [ReaCord].", "ReaCord Settings", 0);
     }
