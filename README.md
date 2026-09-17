@@ -1,5 +1,7 @@
 # ReaCord 🎧💬
 
+![ReaCord Banner](assets/discord/banner.jpg)
+
 > **Native, Ultra-Lightweight Discord Rich Presence for Cockos REAPER DAW**  
 > Distributed via ReaPack • Zero external helper programs • Granular privacy opt-ins • Zero audio latency impact
 
