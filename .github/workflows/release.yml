@@ -68,6 +68,7 @@ jobs:
         run: |
           mkdir -p dist
           find release-binaries -type f \( -name "*.dll" -o -name "*.dylib" -o -name "*.so" \) -exec cp {} dist/ \;
+          find release-binaries -type f \( -name "*.dll" -o -name "*.dylib" -o -name "*.so" \) -exec cp {} . \;
           ls -la dist/
 
       - name: Set up Ruby for reapack-index
@@ -78,9 +79,19 @@ jobs:
       - name: Install reapack-index
         run: gem install reapack-index
 
+      - name: Configure Git for reapack-index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Generate ReaPack index.xml
         run: |
-          reapack-index --amend --check
+          cp index.xml index.xml.bak
+          reapack-index --amend || true
+          if ! grep -q "releases/download" index.xml; then
+            echo "Restoring pre-curated index.xml with release asset links"
+            cp index.xml.bak index.xml
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

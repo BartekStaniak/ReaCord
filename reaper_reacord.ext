@@ -10,13 +10,10 @@
   + New official diagonal-split ReaCord emblem
   + Terms of Service & Privacy Policy for Discord Developer Portal verification
 @provides
-  [windows32] reaper_reacord32.dll
-  [windows64] reaper_reacord64.dll
-  [windows-arm64] reaper_reacord-arm64.dll
+  [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib
   [darwin-arm64] reaper_reacord.dylib
-  [linux-x86_64] reaper_reacord-x86_64.so
-  [linux-aarch64] reaper_reacord-aarch64.so
+  [linux64] reaper_reacord-x86_64.so
   [main=main,gui] scripts/ReaCord_Settings_ImGui.lua
 @about
   # ReaCord
