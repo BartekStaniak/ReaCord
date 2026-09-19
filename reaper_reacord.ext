@@ -1,8 +1,8 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta11
+@version 1.0.3-beta12
 @changelog
-  + Move "Use Modern ReaImGui by default" checkbox under Advanced Settings in Win32 dialog
+  + Optimize ReaImGui modern settings window to eliminate choppy movement when dragged
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

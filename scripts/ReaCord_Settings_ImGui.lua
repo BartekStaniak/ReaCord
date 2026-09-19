@@ -1,11 +1,11 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.3-beta11
+-- @version 1.0.3-beta12
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
 
-local SCRIPT_VERSION = "1.0.3-beta11"
+local SCRIPT_VERSION = "1.0.3-beta12"
 local ctx
 
 -- Verify ReaImGui availability
@@ -20,6 +20,11 @@ if not reaper.ImGui_CreateContext then
 end
 
 ctx = reaper.ImGui_CreateContext('ReaCord Settings')
+
+-- Restrict window dragging to title bar to avoid accidental movement during control interactions
+if reaper.ImGui_ConfigVar_WindowsMoveFromTitleBarOnly then
+    reaper.ImGui_SetConfigVar(ctx, reaper.ImGui_ConfigVar_WindowsMoveFromTitleBarOnly(), 1)
+end
 
 -- Helper functions to read/write ReaCord config via API or ExtState
 local function GetConfig(key, default_val)
@@ -46,6 +51,7 @@ local proj_mode = tonumber(GetConfig("project_name_mode", "1")) or 1
 local time_mode = tonumber(GetConfig("session_time_mode", "1")) or 1
 local play_mode = tonumber(GetConfig("play_state_mode", "2")) or 2
 local icon_style = tonumber(GetConfig("icon_style", "0")) or 0
+local track_count = GetConfig("show_track_count", "1") == "1"
 local large_key = GetConfig("large_image_key", "")
 if large_key == "reacord_logo" then icon_style = 1
 elseif large_key == "reaper_logo" then icon_style = 0 end
@@ -67,6 +73,12 @@ local time_options = { "Hidden", "Project Elapsed Time", "REAPER Uptime", "Proje
 local play_options = { "Hidden", "Simple (Playing, Recording)", "Detailed with Tempo (BPM)" }
 local icon_options = { "REAPER Logo (Classic)", "ReaCord Emblem (Hybrid)" }
 
+-- Precomputed static invariants
+local is_windows = reaper.GetOS():match("Win") ~= nil
+local ver_str = (reaper.ReaCord_GetVersion and reaper.ReaCord_GetVersion() ~= "") and reaper.ReaCord_GetVersion() or SCRIPT_VERSION
+local title = "ReaCord Preferences v" .. ver_str .. "###ReaCord_Preferences"
+local window_flags = reaper.ImGui_WindowFlags_NoCollapse()
+
 local function QueryLiveExtState()
     if not reaper.GetProjExtState then return nil end
     local ok, val = reaper.GetProjExtState(0, extstate_sec, extstate_key)
@@ -75,6 +87,46 @@ local function QueryLiveExtState()
     end
     return nil
 end
+
+-- Throttled query caching to avoid querying C++ mutex & REAPER project chunk every single frame
+local cached_status_str = "Unknown"
+local cached_status_col = 0x949BA4FF
+local cached_live_extstate = nil
+local last_status_poll = 0
+local last_extstate_poll = 0
+
+local function UpdateStatusCache(force)
+    local now = reaper.time_precise()
+    if force or (now - last_status_poll >= 0.5) then
+        last_status_poll = now
+        local s = reaper.ReaCord_GetStatus and reaper.ReaCord_GetStatus() or "Unknown"
+        if s == "Connected" then
+            cached_status_col = 0x57F287FF
+            cached_status_str = s
+        elseif s == "Connecting..." then
+            cached_status_col = 0xFEE75CFF
+            cached_status_str = s
+        elseif s == "Disconnected" then
+            cached_status_col = 0xED4245FF
+            cached_status_str = s .. " (Check if Discord app is open)"
+        else
+            cached_status_col = 0x949BA4FF
+            cached_status_str = s
+        end
+    end
+end
+
+local function UpdateExtStateCache(force)
+    local now = reaper.time_precise()
+    if force or (now - last_extstate_poll >= 0.5) then
+        last_extstate_poll = now
+        cached_live_extstate = QueryLiveExtState()
+    end
+end
+
+-- Initial polling
+UpdateStatusCache(true)
+UpdateExtStateCache(true)
 
 local function RenderDiscordPreview()
     reaper.ImGui_SeparatorText(ctx, "Live Discord Profile Preview")
@@ -146,26 +198,22 @@ local function RenderDiscordPreview()
     reaper.ImGui_PopStyleColor(ctx)
 end
 
+local prev_adv_open = nil
+
 local function Loop()
-    local ver_str = (reaper.ReaCord_GetVersion and reaper.ReaCord_GetVersion() ~= "") and reaper.ReaCord_GetVersion() or SCRIPT_VERSION
-    local title = "ReaCord Preferences v" .. ver_str .. "###ReaCord_Preferences"
-    local visible, open = reaper.ImGui_Begin(ctx, title, true, reaper.ImGui_WindowFlags_AlwaysAutoResize())
+    UpdateStatusCache(false)
+    UpdateExtStateCache(false)
+
+    -- Set comfortable default initial size and constraints
+    reaper.ImGui_SetNextWindowSize(ctx, 420, 530, reaper.ImGui_Cond_FirstUseEver())
+    reaper.ImGui_SetNextWindowSizeConstraints(ctx, 400, 490, 650, 950)
+
+    local visible, open = reaper.ImGui_Begin(ctx, title, true, window_flags)
     if visible then
         -- Connection Status header
-        local status_str = reaper.ReaCord_GetStatus and reaper.ReaCord_GetStatus() or "Unknown"
-        local status_col = 0x949BA4FF
-        if status_str == "Connected" then 
-            status_col = 0x57F287FF
-        elseif status_str == "Connecting..." then 
-            status_col = 0xFEE75CFF
-        elseif status_str == "Disconnected" then 
-            status_col = 0xED4245FF 
-            status_str = status_str .. " (Check if Discord app is open)"
-        end
-
         reaper.ImGui_Text(ctx, "Discord IPC Status: ")
         reaper.ImGui_SameLine(ctx)
-        reaper.ImGui_TextColored(ctx, status_col, status_str)
+        reaper.ImGui_TextColored(ctx, cached_status_col, cached_status_str)
         reaper.ImGui_Spacing(ctx)
 
         -- Master toggles
@@ -235,7 +283,19 @@ local function Loop()
         if time_mode == 3 or client_id ~= DEFAULT_CLIENT_ID then
             reaper.ImGui_SetNextItemOpen(ctx, true, reaper.ImGui_Cond_Appearing())
         end
-        if reaper.ImGui_CollapsingHeader(ctx, "Advanced Settings (Client ID & Custom Timers)") then
+        local adv_open = reaper.ImGui_CollapsingHeader(ctx, "Advanced Settings (Client ID & Custom Timers)")
+
+        -- Auto-expand/shrink window when Advanced Settings is toggled, avoiding per-frame layout recalculation
+        if prev_adv_open == nil then
+            prev_adv_open = adv_open
+        elseif adv_open ~= prev_adv_open then
+            local cur_w, cur_h = reaper.ImGui_GetWindowSize(ctx)
+            local delta = adv_open and 215 or -215
+            reaper.ImGui_SetNextWindowSize(ctx, cur_w, math.max(510, cur_h + delta), reaper.ImGui_Cond_Always())
+            prev_adv_open = adv_open
+        end
+
+        if adv_open then
             reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_ChildBg(), 0x232428FF)
             if reaper.ImGui_BeginChild(ctx, "AdvancedSettingsBox", 0, 195, reaper.ImGui_ChildFlags_Borders()) then
                 -- Discord Client ID
@@ -268,9 +328,8 @@ local function Loop()
                 changed, extstate_key = reaper.ImGui_InputText(ctx, "Key", extstate_key)
                 if changed then SetConfig("extstate_key", extstate_key) end
 
-                local live_val = QueryLiveExtState()
-                if live_val then
-                    reaper.ImGui_TextColored(ctx, 0x57F287FF, "Current Project Value: \"" .. live_val .. "\"")
+                if cached_live_extstate then
+                    reaper.ImGui_TextColored(ctx, 0x57F287FF, "Current Project Value: \"" .. cached_live_extstate .. "\"")
                 else
                     reaper.ImGui_TextColored(ctx, 0x949BA4FF, "Current Project Value: [Not found in current project]")
                 end
@@ -283,7 +342,6 @@ local function Loop()
         RenderDiscordPreview()
 
         reaper.ImGui_Spacing(ctx)
-        local is_windows = reaper.GetOS():match("Win") ~= nil
         if is_windows then
             changed, prefer_reaimgui = reaper.ImGui_Checkbox(ctx, "Use Modern ReaImGui by default for Extensions menu", prefer_reaimgui)
             if changed then
