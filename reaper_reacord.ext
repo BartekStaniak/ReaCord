@@ -1,10 +1,9 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta6
+@version 1.0.3-beta7
 @changelog
-  + Fix ReaImGui window lingering on screen when switching to classic Win32 dialog (destroy context & defer)
-  + Fix preference persistence for Extensions menu default UI (remove reset bug, reload config before opening dialog)
-  + Synchronize ExtState directly in SetConfig to guarantee consistency across C++ and ReaScript
+  + Fix nil value error on window close by removing non-existent ImGui_DestroyContext call
+  + Refine window closing and seamless double-deferred switch into classic Win32 dialog
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

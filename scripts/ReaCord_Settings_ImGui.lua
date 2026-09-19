@@ -1,6 +1,6 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.3-beta6
+-- @version 1.0.3-beta7
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
@@ -296,7 +296,9 @@ local function Loop()
                 open = false
                 if cmd > 0 then
                     reaper.defer(function()
-                        reaper.Main_OnCommand(cmd, 0)
+                        reaper.defer(function()
+                            reaper.Main_OnCommand(cmd, 0)
+                        end)
                     end)
                 end
             end
@@ -312,8 +314,6 @@ local function Loop()
 
     if open then
         reaper.defer(Loop)
-    else
-        reaper.ImGui_DestroyContext(ctx)
     end
 end
 
