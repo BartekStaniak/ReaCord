@@ -1,6 +1,6 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.3-beta1
+-- @version 1.0.3-beta2
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
@@ -227,33 +227,6 @@ local function Loop()
         changed, track_count = reaper.ImGui_Checkbox(ctx, 'Show Track Count', track_count)
         if changed then SetConfig("show_track_count", track_count and "1" or "0") end
 
-        reaper.ImGui_SameLine(ctx, 0, 16)
-        changed, extstate_text = reaper.ImGui_Checkbox(ctx, 'Append Active Time to State', extstate_text)
-        if changed then SetConfig("extstate_in_state_text", extstate_text and "1" or "0") end
-
-        if time_mode == 3 or extstate_text then
-            reaper.ImGui_Spacing(ctx)
-            reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_ChildBg(), 0x232428FF)
-            if reaper.ImGui_BeginChild(ctx, "ExtStateSettings", 0, 100, reaper.ImGui_ChildFlags_Borders()) then
-                reaper.ImGui_TextColored(ctx, 0x5865F2FF, "Project ExtState Active Timer Configuration")
-                changed, extstate_sec = reaper.ImGui_InputText(ctx, "Section", extstate_sec)
-                if changed then SetConfig("extstate_section", extstate_sec) end
-
-                changed, extstate_key = reaper.ImGui_InputText(ctx, "Key", extstate_key)
-                if changed then SetConfig("extstate_key", extstate_key) end
-
-                local live_val = QueryLiveExtState()
-                if live_val then
-                    reaper.ImGui_TextColored(ctx, 0x57F287FF, "Current Project Value: \"" .. live_val .. "\"")
-                else
-                    reaper.ImGui_TextColored(ctx, 0x949BA4FF, "Current Project Value: [Not found / unsaved]")
-                end
-                reaper.ImGui_EndChild(ctx)
-            end
-            reaper.ImGui_PopStyleColor(ctx)
-            reaper.ImGui_Spacing(ctx)
-        end
-
         reaper.ImGui_SeparatorText(ctx, "Application Settings")
         changed, client_id = reaper.ImGui_InputText(ctx, "Discord Client ID", client_id)
         if changed then SetConfig("client_id", client_id) end
@@ -268,6 +241,34 @@ local function Loop()
             reaper.ImGui_TextColored(ctx, 0xFEE75CFF, "Warning: Template Client ID detected! Click 'Default ID' to use official ReaCord app.")
         else
             reaper.ImGui_TextColored(ctx, 0x80848EFF, "Default: Official REAPER App (" .. DEFAULT_CLIENT_ID .. ")")
+        end
+
+        -- Advanced Settings Collapsible Header
+        reaper.ImGui_Spacing(ctx)
+        if time_mode == 3 then
+            reaper.ImGui_SetNextItemOpen(ctx, true, reaper.ImGui_Cond_Appearing())
+        end
+        if reaper.ImGui_CollapsingHeader(ctx, "Advanced Settings (Custom ExtState Timers)") then
+            reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_ChildBg(), 0x232428FF)
+            if reaper.ImGui_BeginChild(ctx, "ExtStateSettings", 0, 115, reaper.ImGui_ChildFlags_Borders()) then
+                changed, extstate_text = reaper.ImGui_Checkbox(ctx, 'Append active time to playback state text', extstate_text)
+                if changed then SetConfig("extstate_in_state_text", extstate_text and "1" or "0") end
+
+                changed, extstate_sec = reaper.ImGui_InputText(ctx, "Section", extstate_sec)
+                if changed then SetConfig("extstate_section", extstate_sec) end
+
+                changed, extstate_key = reaper.ImGui_InputText(ctx, "Key", extstate_key)
+                if changed then SetConfig("extstate_key", extstate_key) end
+
+                local live_val = QueryLiveExtState()
+                if live_val then
+                    reaper.ImGui_TextColored(ctx, 0x57F287FF, "Current Project Value: \"" .. live_val .. "\"")
+                else
+                    reaper.ImGui_TextColored(ctx, 0x949BA4FF, "Current Project Value: [Not found in current project]")
+                end
+                reaper.ImGui_EndChild(ctx)
+            end
+            reaper.ImGui_PopStyleColor(ctx)
         end
 
         reaper.ImGui_Spacing(ctx)

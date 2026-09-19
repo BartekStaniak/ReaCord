@@ -5,6 +5,18 @@
       <metadata>
         <link rel="website">https://github.com/BartekStaniak/ReaCord</link>
       </metadata>
+      <version name="1.0.3-beta2" author="Bartek Staniak" time="2026-09-19T20:35:00Z">
+        <changelog><![CDATA[Experimental Beta 2:
++ Collapsible Advanced Settings section in both Native SWELL dialog and ReaImGui companion
++ ExtState Section & Key configuration tucked neatly out of the way
++ Auto-expands Advanced configuration when Project Active Time (ExtState) is selected
++ Clean, compact default layout for standard usage]]></changelog>
+        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta2/reaper_reacord64.dll</source>
+        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta2/reaper_reacord.dylib</source>
+        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta2/reaper_reacord.dylib</source>
+        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta2/reaper_reacord-x86_64.so</source>
+        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/develop/scripts/ReaCord_Settings_ImGui.lua</source>
+      </version>
       <version name="1.0.3-beta1" author="Bartek Staniak" time="2026-09-19T20:15:00Z">
         <changelog><![CDATA[Experimental Beta:
 + Project Active Time tracking via Project ExtState (replaces tab uptime with true logged work time)

@@ -116,14 +116,92 @@ static void SaveDialog(HWND hwnd) {
     cfg.Save();
 }
 
+static bool s_advanced_expanded = true;
+static int s_delta_y = 54;
+
+static void SetAdvancedExpanded(HWND hwnd, bool expand) {
+    if (s_advanced_expanded == expand) return;
+    s_advanced_expanded = expand;
+
+    int showCmd = expand ? SW_SHOW : SW_HIDE;
+    ShowWindow(GetDlgItem(hwnd, IDC_GROUP_ADVANCED), showCmd);
+    ShowWindow(GetDlgItem(hwnd, IDC_STATIC_EXTSTATE), showCmd);
+    ShowWindow(GetDlgItem(hwnd, IDC_EDIT_EXTSTATE_SECTION), showCmd);
+    ShowWindow(GetDlgItem(hwnd, IDC_EDIT_EXTSTATE_KEY), showCmd);
+    ShowWindow(GetDlgItem(hwnd, IDC_CHECK_EXTSTATE_TEXT), showCmd);
+
+    int shift_y = expand ? s_delta_y : -s_delta_y;
+
+    const int bottom_controls[] = {
+        IDC_BTN_HELP,
+        IDC_STATUS_TEXT,
+        IDOK,
+        IDCANCEL,
+        IDC_APPLY
+    };
+
+    for (int id : bottom_controls) {
+        HWND hCtrl = GetDlgItem(hwnd, id);
+        if (hCtrl) {
+            RECT rc;
+            GetWindowRect(hCtrl, &rc);
+            POINT pt = { rc.left, rc.top };
+            ScreenToClient(hwnd, &pt);
+            SetWindowPos(hCtrl, NULL, pt.x, pt.y + shift_y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+        }
+    }
+
+    RECT rcDlg;
+    GetWindowRect(hwnd, &rcDlg);
+    SetWindowPos(hwnd, NULL, 0, 0, rcDlg.right - rcDlg.left, (rcDlg.bottom - rcDlg.top) + shift_y, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+    SendMessage(GetDlgItem(hwnd, IDC_CHECK_SHOW_ADVANCED), BM_SETCHECK, expand ? BST_CHECKED : BST_UNCHECKED, 0);
+}
+
 static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
-        case WM_INITDIALOG:
+        case WM_INITDIALOG: {
             PopulateDialog(hwnd);
+
+            HWND hGrp = GetDlgItem(hwnd, IDC_GROUP_ADVANCED);
+            if (hGrp) {
+                RECT rcGrp;
+                GetWindowRect(hGrp, &rcGrp);
+                s_delta_y = (rcGrp.bottom - rcGrp.top) + 8;
+                if (s_delta_y <= 0) s_delta_y = 54;
+            }
+
+            Config& cfg = Config::Instance();
+            bool should_expand = (cfg.session_time_mode == SessionTimeMode::ProjectExtState || cfg.extstate_in_state_text);
+            s_advanced_expanded = true;
+            if (!should_expand) {
+                SetAdvancedExpanded(hwnd, false);
+            } else {
+                SendMessage(GetDlgItem(hwnd, IDC_CHECK_SHOW_ADVANCED), BM_SETCHECK, BST_CHECKED, 0);
+            }
             return TRUE;
+        }
 
         case WM_COMMAND:
             switch (LOWORD(wParam)) {
+                case IDC_CHECK_SHOW_ADVANCED: {
+                    bool is_checked = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_SHOW_ADVANCED), BM_GETCHECK, 0, 0) == BST_CHECKED);
+                    SetAdvancedExpanded(hwnd, is_checked);
+                    return TRUE;
+                }
+
+                case IDC_COMBO_SESSION_TIME: {
+                    if (HIWORD(wParam) == CBN_SELCHANGE) {
+                        int sel = static_cast<int>(SendMessage(GetDlgItem(hwnd, IDC_COMBO_SESSION_TIME), CB_GETCURSEL, 0, 0));
+                        if (sel == static_cast<int>(SessionTimeMode::ProjectExtState)) {
+                            if (!s_advanced_expanded) {
+                                SetAdvancedExpanded(hwnd, true);
+                            }
+                        }
+                    }
+                    return TRUE;
+                }
+
                 case IDOK:
                     SaveDialog(hwnd);
                     EndDialog(hwnd, IDOK);

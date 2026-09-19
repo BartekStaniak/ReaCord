@@ -1,11 +1,11 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta1
+@version 1.0.3-beta2
 @changelog
   + Project Active Time tracking via Project ExtState (replaces tab uptime with true logged work time)
   + Smart duration parser: supports integer/float seconds and HH:MM:SS / MM:SS strings
-  + Configurable ExtState Section and Key in both Native SWELL and ReaImGui settings
-  + Option to append tracked active time badge to presence playback status
+  + Collapsible Advanced Settings section in both Native SWELL dialog and ReaImGui companion
+  + Auto-expands Advanced configuration when Project Active Time (ExtState) is selected
   + Live ExtState preview in ReaImGui companion window
 @provides
   [win64] reaper_reacord64.dll
