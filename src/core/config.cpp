@@ -56,7 +56,11 @@ void Config::Load() {
     } else if (large_image_key.empty()) {
         large_image_key = (icon_style == IconStyle::ReaCordHybrid) ? "reacord_logo" : "reaper_logo";
     }
+    extstate_section = ReadExt("extstate_section", "PROJECT_TIME");
+    extstate_key = ReadExt("extstate_key", "active_time");
+    extstate_in_state_text = (ReadExt("extstate_in_state_text", "0") == "1");
     idle_timeout_mins = std::atoi(ReadExt("idle_timeout_mins", "15").c_str());
+    prefer_reaimgui = (ReadExt("prefer_reaimgui", "0") == "1");
 }
 
 void Config::Save() const {
@@ -69,7 +73,11 @@ void Config::Save() const {
     WriteExt("show_track_count", show_track_count ? "1" : "0");
     WriteExt("client_id", client_id);
     WriteExt("large_image_key", GetEffectiveLargeImageKey());
+    WriteExt("extstate_section", extstate_section);
+    WriteExt("extstate_key", extstate_key);
+    WriteExt("extstate_in_state_text", extstate_in_state_text ? "1" : "0");
     WriteExt("idle_timeout_mins", std::to_string(idle_timeout_mins));
+    WriteExt("prefer_reaimgui", prefer_reaimgui ? "1" : "0");
 }
 
 } // namespace ReaCord

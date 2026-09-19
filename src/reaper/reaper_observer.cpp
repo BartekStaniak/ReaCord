@@ -35,6 +35,62 @@ static std::string StripPathAndExt(const std::string& full_path) {
     return filename;
 }
 
+static int64_t ParseExtStateDuration(const std::string& raw) {
+    if (raw.empty()) return 0;
+
+    size_t first = raw.find_first_not_of(" \t\r\n");
+    if (first == std::string::npos) return 0;
+    size_t last = raw.find_last_not_of(" \t\r\n");
+    std::string str = raw.substr(first, (last - first + 1));
+
+    if (str.find(':') != std::string::npos) {
+        std::vector<std::string> parts;
+        std::stringstream ss(str);
+        std::string part;
+        while (std::getline(ss, part, ':')) {
+            parts.push_back(part);
+        }
+        try {
+            if (parts.size() == 3) {
+                int64_t h = std::stoll(parts[0]);
+                int64_t m = std::stoll(parts[1]);
+                int64_t s = std::stoll(parts[2]);
+                return h * 3600 + m * 60 + s;
+            } else if (parts.size() == 2) {
+                int64_t m = std::stoll(parts[0]);
+                int64_t s = std::stoll(parts[1]);
+                return m * 60 + s;
+            }
+        } catch (...) {
+            return 0;
+        }
+    }
+
+    try {
+        double sec = std::stod(str);
+        if (sec > 0.0) {
+            return static_cast<int64_t>(std::round(sec));
+        }
+    } catch (...) {
+        return 0;
+    }
+
+    return 0;
+}
+
+static std::string FormatDurationHuman(int64_t total_sec) {
+    if (total_sec <= 0) return "0s";
+    int64_t hours = total_sec / 3600;
+    int64_t minutes = (total_sec % 3600) / 60;
+    if (hours > 0) {
+        return std::to_string(hours) + "h " + std::to_string(minutes) + "m";
+    } else if (minutes > 0) {
+        return std::to_string(minutes) + "m";
+    } else {
+        return std::to_string(total_sec) + "s";
+    }
+}
+
 void Observer::OnTimerTick() {
     if (!discord_client_) return;
 
@@ -93,13 +149,31 @@ void Observer::OnTimerTick() {
             break;
     }
 
-    // Session time
+    // Session time & ExtState tracking
+    int64_t extstate_seconds = 0;
+    if (cfg.session_time_mode == SessionTimeMode::ProjectExtState || cfg.extstate_in_state_text) {
+        if (GetProjExtState && current_proj) {
+            char ext_val[256] = {0};
+            int res = GetProjExtState(current_proj, cfg.extstate_section.c_str(), cfg.extstate_key.c_str(), ext_val, sizeof(ext_val));
+            if (res > 0 && ext_val[0]) {
+                extstate_seconds = ParseExtStateDuration(ext_val);
+            }
+        }
+    }
+
     switch (cfg.session_time_mode) {
         case SessionTimeMode::ProjectElapsed:
             act.start_time = project_start_time_;
             break;
         case SessionTimeMode::DawUptime:
             act.start_time = app_start_time_;
+            break;
+        case SessionTimeMode::ProjectExtState:
+            if (extstate_seconds > 0) {
+                act.start_time = static_cast<int64_t>(std::time(nullptr)) - extstate_seconds;
+            } else {
+                act.start_time = project_start_time_;
+            }
             break;
         case SessionTimeMode::Hidden:
         default:
@@ -159,6 +233,12 @@ void Observer::OnTimerTick() {
             int track_count = CountTracks(current_proj);
             state_str += " • " + std::to_string(track_count) + (track_count == 1 ? " Track" : " Tracks");
         }
+
+        // ExtState active duration append
+        if (cfg.extstate_in_state_text && extstate_seconds > 0) {
+            state_str += " • " + FormatDurationHuman(extstate_seconds);
+        }
+
         act.state = state_str;
     }
 

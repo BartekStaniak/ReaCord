@@ -5,6 +5,19 @@
       <metadata>
         <link rel="website">https://github.com/BartekStaniak/ReaCord</link>
       </metadata>
+      <version name="1.0.3-beta12" author="Bartek Staniak" time="2026-09-19T22:20:00Z">
+        <changelog><![CDATA[Smooth ReaImGui Window Movement:
++ Eliminate AlwaysAutoResize per-frame recalculation causing DWM stutter when dragging
++ Add responsive single-transition auto-resize on Advanced Settings toggle
++ Throttle Discord status and project ExtState queries to eliminate per-frame mutex contention
++ Enforce title bar only drag mode to prevent accidental control movements
++ Properly initialize track count state from saved configuration]]></changelog>
+        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta12/reaper_reacord64.dll</source>
+        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta12/reaper_reacord.dylib</source>
+        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta12/reaper_reacord.dylib</source>
+        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta12/reaper_reacord-x86_64.so</source>
+        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/develop/scripts/ReaCord_Settings_ImGui.lua</source>
+      </version>
       <version name="1.0.3-beta11" author="Bartek Staniak" time="2026-09-19T22:08:00Z">
         <changelog><![CDATA[Move Default UI Preference to Advanced Settings:
 + Move "Use Modern ReaImGui by default" checkbox under Advanced Settings in Win32 dialog
