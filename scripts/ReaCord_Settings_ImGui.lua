@@ -1,6 +1,6 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.3-beta2
+-- @version 1.0.3-beta3
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
@@ -227,30 +227,35 @@ local function Loop()
         changed, track_count = reaper.ImGui_Checkbox(ctx, 'Show Track Count', track_count)
         if changed then SetConfig("show_track_count", track_count and "1" or "0") end
 
-        reaper.ImGui_SeparatorText(ctx, "Application Settings")
-        changed, client_id = reaper.ImGui_InputText(ctx, "Discord Client ID", client_id)
-        if changed then SetConfig("client_id", client_id) end
-
-        reaper.ImGui_SameLine(ctx)
-        if reaper.ImGui_Button(ctx, "Default ID") then
-            client_id = DEFAULT_CLIENT_ID
-            SetConfig("client_id", client_id)
-        end
-
-        if client_id == "123456789012345678" then
-            reaper.ImGui_TextColored(ctx, 0xFEE75CFF, "Warning: Template Client ID detected! Click 'Default ID' to use official ReaCord app.")
-        else
-            reaper.ImGui_TextColored(ctx, 0x80848EFF, "Default: Official REAPER App (" .. DEFAULT_CLIENT_ID .. ")")
-        end
-
         -- Advanced Settings Collapsible Header
         reaper.ImGui_Spacing(ctx)
-        if time_mode == 3 then
+        if time_mode == 3 or client_id ~= DEFAULT_CLIENT_ID then
             reaper.ImGui_SetNextItemOpen(ctx, true, reaper.ImGui_Cond_Appearing())
         end
-        if reaper.ImGui_CollapsingHeader(ctx, "Advanced Settings (Custom ExtState Timers)") then
+        if reaper.ImGui_CollapsingHeader(ctx, "Advanced Settings (Client ID & Custom Timers)") then
             reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_ChildBg(), 0x232428FF)
-            if reaper.ImGui_BeginChild(ctx, "ExtStateSettings", 0, 115, reaper.ImGui_ChildFlags_Borders()) then
+            if reaper.ImGui_BeginChild(ctx, "AdvancedSettingsBox", 0, 195, reaper.ImGui_ChildFlags_Borders()) then
+                -- Discord Client ID
+                reaper.ImGui_TextColored(ctx, 0x5865F2FF, "Custom Discord Client ID:")
+                changed, client_id = reaper.ImGui_InputText(ctx, "Client ID", client_id)
+                if changed then SetConfig("client_id", client_id) end
+
+                reaper.ImGui_SameLine(ctx)
+                if reaper.ImGui_Button(ctx, "Default ID") then
+                    client_id = DEFAULT_CLIENT_ID
+                    SetConfig("client_id", client_id)
+                end
+
+                if client_id == "123456789012345678" then
+                    reaper.ImGui_TextColored(ctx, 0xFEE75CFF, "Warning: Template Client ID detected! Click 'Default ID'.")
+                else
+                    reaper.ImGui_TextColored(ctx, 0x80848EFF, "Default: Official REAPER App (" .. DEFAULT_CLIENT_ID .. ")")
+                end
+
+                reaper.ImGui_Separator(ctx)
+
+                -- ExtState Custom Project Timer
+                reaper.ImGui_TextColored(ctx, 0x5865F2FF, "Project ExtState Active Timer:")
                 changed, extstate_text = reaper.ImGui_Checkbox(ctx, 'Append active time to playback state text', extstate_text)
                 if changed then SetConfig("extstate_in_state_text", extstate_text and "1" or "0") end
 

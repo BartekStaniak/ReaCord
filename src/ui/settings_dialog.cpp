@@ -63,9 +63,9 @@ static void PopulateDialog(HWND hwnd) {
     std::string discord_status = g_discord_client.GetStatusString();
     std::string status = "Status: " + discord_status;
     if (cfg.client_id == "123456789012345678") {
-        status = "Status: Template ID detected";
+        status = "Status: Template Client ID detected";
     } else if (discord_status == "Disconnected") {
-        status += " (Discord open?)";
+        status += " (Discord desktop app not detected)";
     }
     SetWindowTextA(GetDlgItem(hwnd, IDC_STATUS_TEXT), status.c_str());
 }
@@ -117,24 +117,35 @@ static void SaveDialog(HWND hwnd) {
 }
 
 static bool s_advanced_expanded = true;
-static int s_delta_y = 54;
+static int s_delta_y = 86;
 
 static void SetAdvancedExpanded(HWND hwnd, bool expand) {
     if (s_advanced_expanded == expand) return;
     s_advanced_expanded = expand;
 
     int showCmd = expand ? SW_SHOW : SW_HIDE;
-    ShowWindow(GetDlgItem(hwnd, IDC_GROUP_ADVANCED), showCmd);
-    ShowWindow(GetDlgItem(hwnd, IDC_STATIC_EXTSTATE), showCmd);
-    ShowWindow(GetDlgItem(hwnd, IDC_EDIT_EXTSTATE_SECTION), showCmd);
-    ShowWindow(GetDlgItem(hwnd, IDC_EDIT_EXTSTATE_KEY), showCmd);
-    ShowWindow(GetDlgItem(hwnd, IDC_CHECK_EXTSTATE_TEXT), showCmd);
+    const int advanced_controls[] = {
+        IDC_GROUP_ADVANCED,
+        IDC_STATIC_CLIENT_ID,
+        IDC_EDIT_CLIENT_ID,
+        IDC_BTN_RESET_DEFAULT,
+        IDC_STATIC_DEFAULT_ID,
+        IDC_STATIC_EXTSTATE,
+        IDC_EDIT_EXTSTATE_SECTION,
+        IDC_EDIT_EXTSTATE_KEY,
+        IDC_CHECK_EXTSTATE_TEXT
+    };
+
+    for (int id : advanced_controls) {
+        HWND hCtrl = GetDlgItem(hwnd, id);
+        if (hCtrl) ShowWindow(hCtrl, showCmd);
+    }
 
     int shift_y = expand ? s_delta_y : -s_delta_y;
 
     const int bottom_controls[] = {
-        IDC_BTN_HELP,
         IDC_STATUS_TEXT,
+        IDC_BTN_HELP,
         IDOK,
         IDCANCEL,
         IDC_APPLY
@@ -168,11 +179,13 @@ static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
                 RECT rcGrp;
                 GetWindowRect(hGrp, &rcGrp);
                 s_delta_y = (rcGrp.bottom - rcGrp.top) + 8;
-                if (s_delta_y <= 0) s_delta_y = 54;
+                if (s_delta_y <= 0) s_delta_y = 86;
             }
 
             Config& cfg = Config::Instance();
-            bool should_expand = (cfg.session_time_mode == SessionTimeMode::ProjectExtState || cfg.extstate_in_state_text);
+            bool should_expand = (cfg.session_time_mode == SessionTimeMode::ProjectExtState || 
+                                  cfg.extstate_in_state_text || 
+                                  cfg.client_id != REACORD_DEFAULT_CLIENT_ID);
             s_advanced_expanded = true;
             if (!should_expand) {
                 SetAdvancedExpanded(hwnd, false);

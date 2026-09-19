@@ -1,12 +1,12 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta2
+@version 1.0.3-beta3
 @changelog
-  + Project Active Time tracking via Project ExtState (replaces tab uptime with true logged work time)
-  + Smart duration parser: supports integer/float seconds and HH:MM:SS / MM:SS strings
-  + Collapsible Advanced Settings section in both Native SWELL dialog and ReaImGui companion
-  + Auto-expands Advanced configuration when Project Active Time (ExtState) is selected
-  + Live ExtState preview in ReaImGui companion window
+  + Discord Application Client ID moved into Advanced Settings section
+  + Ultra-compact default dialog layout (only 198 DLUs tall)
+  + Dedicated full-width status line preventing any text clipping or wrapping
+  + Fixed literal ampersands (&&) in Win32 dialog controls
+  + Balanced action button bar (Help on left, OK/Cancel/Apply on right)
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib
