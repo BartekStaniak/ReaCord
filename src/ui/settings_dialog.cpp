@@ -36,6 +36,7 @@ static void PopulateDialog(HWND hwnd) {
     SendMessage(cbTime, CB_ADDSTRING, 0, (LPARAM)"Hidden");
     SendMessage(cbTime, CB_ADDSTRING, 0, (LPARAM)"Project Elapsed Time");
     SendMessage(cbTime, CB_ADDSTRING, 0, (LPARAM)"REAPER App Uptime");
+    SendMessage(cbTime, CB_ADDSTRING, 0, (LPARAM)"Project Active Time (ExtState)");
     SendMessage(cbTime, CB_SETCURSEL, static_cast<WPARAM>(cfg.session_time_mode), 0);
 
     HWND cbPlay = GetDlgItem(hwnd, IDC_COMBO_PLAY_STATE);
@@ -50,6 +51,10 @@ static void PopulateDialog(HWND hwnd) {
     SendMessage(cbIcon, CB_ADDSTRING, 0, (LPARAM)"REAPER Logo (Classic)");
     SendMessage(cbIcon, CB_ADDSTRING, 0, (LPARAM)"ReaCord Emblem (Hybrid)");
     SendMessage(cbIcon, CB_SETCURSEL, static_cast<WPARAM>(cfg.icon_style), 0);
+
+    SendMessage(GetDlgItem(hwnd, IDC_CHECK_EXTSTATE_TEXT), BM_SETCHECK, cfg.extstate_in_state_text ? BST_CHECKED : BST_UNCHECKED, 0);
+    SetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_EXTSTATE_SECTION), cfg.extstate_section.c_str());
+    SetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_EXTSTATE_KEY), cfg.extstate_key.c_str());
 
     // Client ID
     SetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_CLIENT_ID), cfg.client_id.c_str());
@@ -71,12 +76,21 @@ static void SaveDialog(HWND hwnd) {
     cfg.enabled = (SendMessage(GetDlgItem(hwnd, IDC_ENABLE), BM_GETCHECK, 0, 0) == BST_CHECKED);
     cfg.incognito = (SendMessage(GetDlgItem(hwnd, IDC_INCOGNITO), BM_GETCHECK, 0, 0) == BST_CHECKED);
     cfg.show_track_count = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_TRACK_COUNT), BM_GETCHECK, 0, 0) == BST_CHECKED);
+    cfg.extstate_in_state_text = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_EXTSTATE_TEXT), BM_GETCHECK, 0, 0) == BST_CHECKED);
 
     cfg.project_name_mode = static_cast<ProjectNameMode>(SendMessage(GetDlgItem(hwnd, IDC_COMBO_PROJ_NAME), CB_GETCURSEL, 0, 0));
     cfg.session_time_mode = static_cast<SessionTimeMode>(SendMessage(GetDlgItem(hwnd, IDC_COMBO_SESSION_TIME), CB_GETCURSEL, 0, 0));
     cfg.play_state_mode = static_cast<PlayStateMode>(SendMessage(GetDlgItem(hwnd, IDC_COMBO_PLAY_STATE), CB_GETCURSEL, 0, 0));
     cfg.icon_style = static_cast<IconStyle>(SendMessage(GetDlgItem(hwnd, IDC_COMBO_ICON_STYLE), CB_GETCURSEL, 0, 0));
     cfg.large_image_key = (cfg.icon_style == IconStyle::ReaCordHybrid) ? "reacord_logo" : "reaper_logo";
+
+    char secBuf[128] = {0};
+    GetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_EXTSTATE_SECTION), secBuf, sizeof(secBuf));
+    if (secBuf[0]) cfg.extstate_section = secBuf;
+
+    char keyBuf[128] = {0};
+    GetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_EXTSTATE_KEY), keyBuf, sizeof(keyBuf));
+    if (keyBuf[0]) cfg.extstate_key = keyBuf;
 
     char idBuf[128] = {0};
     GetWindowTextA(GetDlgItem(hwnd, IDC_EDIT_CLIENT_ID), idBuf, sizeof(idBuf));

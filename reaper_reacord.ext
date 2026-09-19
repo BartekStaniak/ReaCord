@@ -1,9 +1,12 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.2
+@version 1.0.3-beta1
 @changelog
-  + Profile Card Logo selection: choose between Classic REAPER guitar pick and ReaCord hybrid emblem
-  + Configurable in both native SWELL dialog and ReaImGui companion
+  + Project Active Time tracking via Project ExtState (replaces tab uptime with true logged work time)
+  + Smart duration parser: supports integer/float seconds and HH:MM:SS / MM:SS strings
+  + Configurable ExtState Section and Key in both Native SWELL and ReaImGui settings
+  + Option to append tracked active time badge to presence playback status
+  + Live ExtState preview in ReaImGui companion window
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

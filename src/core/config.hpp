@@ -14,7 +14,8 @@ enum class ProjectNameMode {
 enum class SessionTimeMode {
     Hidden = 0,
     ProjectElapsed = 1,
-    DawUptime = 2
+    DawUptime = 2,
+    ProjectExtState = 3
 };
 
 enum class PlayStateMode {
@@ -36,6 +37,9 @@ struct Config {
     PlayStateMode play_state_mode = PlayStateMode::DetailedBpm;
     IconStyle icon_style = IconStyle::ReaperClassic;
     bool show_track_count = true;
+    std::string extstate_section = "PROJECT_TIME";
+    std::string extstate_key = "active_time";
+    bool extstate_in_state_text = false;
 #define REACORD_DEFAULT_CLIENT_ID "1462972195658534965"
 
     std::string client_id = REACORD_DEFAULT_CLIENT_ID; // Official ReaCord App ID

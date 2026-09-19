@@ -1,6 +1,6 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.2
+-- @version 1.0.3-beta1
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
@@ -57,10 +57,23 @@ if client_id == "" or client_id == "123456789012345678" then
     SetConfig("client_id", client_id)
 end
 
+local extstate_sec = GetConfig("extstate_section", "PROJECT_TIME")
+local extstate_key = GetConfig("extstate_key", "active_time")
+local extstate_text = GetConfig("extstate_in_state_text", "0") == "1"
+
 local proj_options = { "Hidden", "Project Name Only", "Full Path", "Generic (\"Working on a Project\")" }
-local time_options = { "Hidden", "Project Elapsed Time", "REAPER Uptime" }
+local time_options = { "Hidden", "Project Elapsed Time", "REAPER Uptime", "Project Active Time (ExtState)" }
 local play_options = { "Hidden", "Simple (Playing, Recording)", "Detailed with Tempo (BPM)" }
 local icon_options = { "REAPER Logo (Classic)", "ReaCord Emblem (Hybrid)" }
+
+local function QueryLiveExtState()
+    if not reaper.GetProjExtState then return nil end
+    local ok, val = reaper.GetProjExtState(0, extstate_sec, extstate_key)
+    if ok == 1 and val ~= "" then
+        return val
+    end
+    return nil
+end
 
 local function RenderDiscordPreview()
     reaper.ImGui_SeparatorText(ctx, "Live Discord Profile Preview")
@@ -109,12 +122,17 @@ local function RenderDiscordPreview()
             if track_count and state_str ~= "" then
                 state_str = state_str .. " • 24 Tracks"
             end
+            if extstate_text and state_str ~= "" then
+                state_str = state_str .. " • 4h 12m"
+            end
             if state_str ~= "" then
                 reaper.ImGui_TextColored(ctx, 0x949BA4FF, state_str)
             end
 
             -- Timestamp line
-            if time_mode ~= 0 then
+            if time_mode == 3 then
+                reaper.ImGui_TextColored(ctx, 0x949BA4FF, "04:12:35 elapsed (Active ExtState)")
+            elseif time_mode ~= 0 then
                 reaper.ImGui_TextColored(ctx, 0x949BA4FF, "01:24:50 elapsed")
             end
         end
@@ -208,6 +226,33 @@ local function Loop()
 
         changed, track_count = reaper.ImGui_Checkbox(ctx, 'Show Track Count', track_count)
         if changed then SetConfig("show_track_count", track_count and "1" or "0") end
+
+        reaper.ImGui_SameLine(ctx, 0, 16)
+        changed, extstate_text = reaper.ImGui_Checkbox(ctx, 'Append Active Time to State', extstate_text)
+        if changed then SetConfig("extstate_in_state_text", extstate_text and "1" or "0") end
+
+        if time_mode == 3 or extstate_text then
+            reaper.ImGui_Spacing(ctx)
+            reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_ChildBg(), 0x232428FF)
+            if reaper.ImGui_BeginChild(ctx, "ExtStateSettings", 0, 100, reaper.ImGui_ChildFlags_Borders()) then
+                reaper.ImGui_TextColored(ctx, 0x5865F2FF, "Project ExtState Active Timer Configuration")
+                changed, extstate_sec = reaper.ImGui_InputText(ctx, "Section", extstate_sec)
+                if changed then SetConfig("extstate_section", extstate_sec) end
+
+                changed, extstate_key = reaper.ImGui_InputText(ctx, "Key", extstate_key)
+                if changed then SetConfig("extstate_key", extstate_key) end
+
+                local live_val = QueryLiveExtState()
+                if live_val then
+                    reaper.ImGui_TextColored(ctx, 0x57F287FF, "Current Project Value: \"" .. live_val .. "\"")
+                else
+                    reaper.ImGui_TextColored(ctx, 0x949BA4FF, "Current Project Value: [Not found / unsaved]")
+                end
+                reaper.ImGui_EndChild(ctx)
+            end
+            reaper.ImGui_PopStyleColor(ctx)
+            reaper.ImGui_Spacing(ctx)
+        end
 
         reaper.ImGui_SeparatorText(ctx, "Application Settings")
         changed, client_id = reaper.ImGui_InputText(ctx, "Discord Client ID", client_id)

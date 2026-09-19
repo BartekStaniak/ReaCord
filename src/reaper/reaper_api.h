@@ -32,6 +32,7 @@
 #define REAPERAPI_WANT_GetExtState
 #define REAPERAPI_WANT_SetExtState
 #define REAPERAPI_WANT_HasExtState
+#define REAPERAPI_WANT_GetProjExtState
 #define REAPERAPI_WANT_time_precise
 #define REAPERAPI_WANT_GetMainHwnd
 #define REAPERAPI_WANT_ShowConsoleMsg
