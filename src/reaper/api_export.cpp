@@ -12,7 +12,7 @@ extern Discord::Client g_discord_client;
 
 // ReaScript API: ReaCord_GetVersion
 const char* API_ReaCord_GetVersion() {
-    return "1.0.3-beta9";
+    return REACORD_VERSION;
 }
 
 // ReaScript API: ReaCord_GetStatus

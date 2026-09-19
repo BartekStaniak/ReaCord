@@ -83,6 +83,12 @@ static BOOL CALLBACK HideReaImGuiWindowProc(HWND hwnd, LPARAM lParam) {
     DWORD pid = 0;
     GetWindowThreadProcessId(hwnd, &pid);
     if (pid == static_cast<DWORD>(lParam)) {
+        char className[64] = {0};
+        GetClassNameA(hwnd, className, sizeof(className));
+        if (strcmp(className, "#32770") == 0) {
+            return TRUE; // Do not hide native Win32 dialogs
+        }
+
         char title[256] = {0};
         if (GetWindowTextA(hwnd, title, sizeof(title)) > 0) {
             if (strstr(title, "ReaCord Preferences") != nullptr ||
@@ -264,6 +270,10 @@ static void SetAdvancedExpanded(HWND hwnd, bool expand) {
 static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_INITDIALOG: {
+            char title[128];
+            snprintf(title, sizeof(title), "ReaCord Settings v%s", REACORD_VERSION);
+            SetWindowTextA(hwnd, title);
+
             PopulateDialog(hwnd);
 
             HWND hGrp = GetDlgItem(hwnd, IDC_GROUP_ADVANCED);
@@ -390,7 +400,7 @@ void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
                           "Active App ID: " + Config::Instance().client_id + "\n\n"
                           "ReaCord is running with the official REAPER Discord application.\n"
                           "To configure privacy settings or view the live Discord card preview, run 'ReaCord_Settings_ImGui.lua' from REAPER's Action List.";
-        MB(msg.c_str(), "ReaCord Settings", 0);
+        MB(msg.c_str(), "ReaCord Settings v" REACORD_VERSION, 0);
     }
 }
 

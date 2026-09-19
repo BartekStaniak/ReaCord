@@ -1,10 +1,11 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.3-beta9
+-- @version 1.0.3-beta10
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
 
+local SCRIPT_VERSION = "1.0.3-beta10"
 local ctx
 
 -- Verify ReaImGui availability
@@ -146,7 +147,9 @@ local function RenderDiscordPreview()
 end
 
 local function Loop()
-    local visible, open = reaper.ImGui_Begin(ctx, 'ReaCord Preferences', true, reaper.ImGui_WindowFlags_AlwaysAutoResize())
+    local ver_str = (reaper.ReaCord_GetVersion and reaper.ReaCord_GetVersion() ~= "") and reaper.ReaCord_GetVersion() or SCRIPT_VERSION
+    local title = "ReaCord Preferences v" .. ver_str .. "###ReaCord_Preferences"
+    local visible, open = reaper.ImGui_Begin(ctx, title, true, reaper.ImGui_WindowFlags_AlwaysAutoResize())
     if visible then
         -- Connection Status header
         local status_str = reaper.ReaCord_GetStatus and reaper.ReaCord_GetStatus() or "Unknown"
