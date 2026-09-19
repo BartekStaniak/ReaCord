@@ -5,15 +5,15 @@
       <metadata>
         <link rel="website">https://github.com/BartekStaniak/ReaCord</link>
       </metadata>
-      <version name="1.0.2-beta1" author="Bartek Staniak" time="2026-09-19T18:35:00Z">
-        <changelog><![CDATA[Experimental Beta:
+      <version name="1.0.2" author="Bartek Staniak" time="2026-09-19T20:10:00Z">
+        <changelog><![CDATA[Logo Customization Release:
 + Profile Card Logo selection: choose between Classic REAPER guitar pick and ReaCord hybrid emblem
 + Configurable in both native SWELL dialog and ReaImGui companion]]></changelog>
-        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.2-beta1/reaper_reacord64.dll</source>
-        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.2-beta1/reaper_reacord.dylib</source>
-        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.2-beta1/reaper_reacord.dylib</source>
-        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.2-beta1/reaper_reacord-x86_64.so</source>
-        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/develop/scripts/ReaCord_Settings_ImGui.lua</source>
+        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.2/reaper_reacord64.dll</source>
+        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.2/reaper_reacord.dylib</source>
+        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.2/reaper_reacord.dylib</source>
+        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.2/reaper_reacord-x86_64.so</source>
+        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/main/scripts/ReaCord_Settings_ImGui.lua</source>
       </version>
       <version name="1.0.1" author="Bartek Staniak" time="2026-09-17T15:25:00Z">
         <changelog><![CDATA[Security & Asset Release:
