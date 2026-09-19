@@ -42,24 +42,36 @@ static gaccel_register_t g_accel_incognito = {
     "ReaCord: Toggle Incognito Mode"
 };
 
+static int g_open_classic_delay_ticks = -1;
+
 static void ReaCord_TimerHook() {
     Observer::Instance().OnTimerTick();
 
-    bool openClassic = UI::CheckAndResetRequestOpenClassic();
-    if (!openClassic && GetExtState) {
+    bool requested = UI::CheckAndResetRequestOpenClassic();
+    if (!requested && GetExtState) {
         const char* req = GetExtState("ReaCord", "request_open_classic");
         if (req && strcmp(req, "1") == 0) {
-            openClassic = true;
+            requested = true;
         }
     }
 
-    if (openClassic) {
+    if (requested) {
         if (DeleteExtState) {
             DeleteExtState("ReaCord", "request_open_classic", false);
         } else if (SetExtState) {
             SetExtState("ReaCord", "request_open_classic", "", false);
         }
-        UI::ShowNativeSettingsDialog(g_hInstance, GetMainHwnd ? GetMainHwnd() : nullptr);
+        UI::HideReaImGuiWindow();
+        g_open_classic_delay_ticks = 4; // Allow ~120ms for ReaImGui to garbage-collect and destroy its platform windows
+    }
+
+    if (g_open_classic_delay_ticks > 0) {
+        --g_open_classic_delay_ticks;
+        UI::HideReaImGuiWindow();
+        if (g_open_classic_delay_ticks == 0) {
+            g_open_classic_delay_ticks = -1;
+            UI::ShowNativeSettingsDialog(g_hInstance, GetMainHwnd ? GetMainHwnd() : nullptr);
+        }
     }
 }
 

@@ -17,6 +17,7 @@ void ShowNativeSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHw
 bool LaunchReaImGuiScript();
 void RequestOpenClassicDialog();
 bool CheckAndResetRequestOpenClassic();
+void HideReaImGuiWindow();
 
 } // namespace UI
 } // namespace ReaCord

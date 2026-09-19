@@ -1,9 +1,10 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta8
+@version 1.0.3-beta9
 @changelog
-  + Decouple ReaImGui and Win32 dialog transitions via asynchronous timer hook
-  + Ensure ReaImGui window closes completely before opening classic Win32 dialog
+  + Instant window hiding on UI switch via Win32 ShowWindow
+  + Graceful timer hook deferral allowing ReaImGui GC and platform window destruction
+  + Eliminate lingering ReaImGui background instances
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

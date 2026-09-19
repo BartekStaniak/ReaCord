@@ -57,6 +57,7 @@ static std::atomic<bool> g_request_open_classic{false};
 
 void RequestOpenClassicDialog() {
     g_request_open_classic.store(true);
+    HideReaImGuiWindow();
 }
 
 bool CheckAndResetRequestOpenClassic() {
@@ -77,6 +78,29 @@ namespace ReaCord {
 extern Discord::Client g_discord_client;
 
 namespace UI {
+
+static BOOL CALLBACK HideReaImGuiWindowProc(HWND hwnd, LPARAM lParam) {
+    DWORD pid = 0;
+    GetWindowThreadProcessId(hwnd, &pid);
+    if (pid == static_cast<DWORD>(lParam)) {
+        char title[256] = {0};
+        if (GetWindowTextA(hwnd, title, sizeof(title)) > 0) {
+            if (strstr(title, "ReaCord Preferences") != nullptr ||
+                strstr(title, "ReaCord Settings") != nullptr) {
+                ShowWindow(hwnd, SW_HIDE);
+            }
+        }
+    }
+    return TRUE;
+}
+
+void HideReaImGuiWindow() {
+    DWORD pid = GetCurrentProcessId();
+    EnumWindows(HideReaImGuiWindowProc, static_cast<LPARAM>(pid));
+    if (GetMainHwnd && GetMainHwnd()) {
+        EnumChildWindows(static_cast<HWND>(GetMainHwnd()), HideReaImGuiWindowProc, static_cast<LPARAM>(pid));
+    }
+}
 
 static void PopulateDialog(HWND hwnd) {
     Config& cfg = Config::Instance();
@@ -348,6 +372,8 @@ namespace ReaCord {
 extern Discord::Client g_discord_client;
 
 namespace UI {
+
+void HideReaImGuiWindow() {}
 
 void ShowNativeSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
     ShowSettingsDialog(hInstance, parentHwnd);
