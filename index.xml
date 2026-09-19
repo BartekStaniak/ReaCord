@@ -5,6 +5,17 @@
       <metadata>
         <link rel="website">https://github.com/BartekStaniak/ReaCord</link>
       </metadata>
+      <version name="1.0.3-beta6" author="Bartek Staniak" time="2026-09-19T21:28:00Z">
+        <changelog><![CDATA[Fixes for UI Switcher & Preference:
++ Fix ReaImGui window lingering on screen when switching to classic Win32 dialog (destroy context & defer)
++ Fix preference persistence for Extensions menu default UI (remove reset bug, reload config before opening dialog)
++ Synchronize ExtState directly in SetConfig to guarantee consistency across C++ and ReaScript]]></changelog>
+        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta6/reaper_reacord64.dll</source>
+        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta6/reaper_reacord.dylib</source>
+        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta6/reaper_reacord.dylib</source>
+        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta6/reaper_reacord-x86_64.so</source>
+        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/develop/scripts/ReaCord_Settings_ImGui.lua</source>
+      </version>
       <version name="1.0.3-beta5" author="Bartek Staniak" time="2026-09-19T21:20:00Z">
         <changelog><![CDATA[Dual Interface & 1-Click Launch:
 + Seamless in-dialog toggle between Classic Win32 dialog and Modern ReaImGui on Windows
