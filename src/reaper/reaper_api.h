@@ -31,6 +31,7 @@
 #define REAPERAPI_WANT_TimeMap_GetDividedBpmAtTime
 #define REAPERAPI_WANT_GetExtState
 #define REAPERAPI_WANT_SetExtState
+#define REAPERAPI_WANT_DeleteExtState
 #define REAPERAPI_WANT_HasExtState
 #define REAPERAPI_WANT_GetProjExtState
 #define REAPERAPI_WANT_time_precise

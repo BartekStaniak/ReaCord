@@ -1,9 +1,9 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta7
+@version 1.0.3-beta8
 @changelog
-  + Fix nil value error on window close by removing non-existent ImGui_DestroyContext call
-  + Refine window closing and seamless double-deferred switch into classic Win32 dialog
+  + Decouple ReaImGui and Win32 dialog transitions via asynchronous timer hook
+  + Ensure ReaImGui window closes completely before opening classic Win32 dialog
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

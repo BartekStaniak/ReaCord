@@ -15,6 +15,8 @@ namespace UI {
 void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd);
 void ShowNativeSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd);
 bool LaunchReaImGuiScript();
+void RequestOpenClassicDialog();
+bool CheckAndResetRequestOpenClassic();
 
 } // namespace UI
 } // namespace ReaCord

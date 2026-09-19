@@ -1,6 +1,7 @@
 #include "core/config.hpp"
 #include "discord/discord_ipc.hpp"
 #include "reaper/reaper_api.h"
+#include "ui/settings_dialog.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -11,7 +12,7 @@ extern Discord::Client g_discord_client;
 
 // ReaScript API: ReaCord_GetVersion
 const char* API_ReaCord_GetVersion() {
-    return "1.0.3-beta7";
+    return "1.0.3-beta8";
 }
 
 // ReaScript API: ReaCord_GetStatus
@@ -87,6 +88,12 @@ bool API_ReaCord_ToggleIncognito() {
     return cfg.incognito;
 }
 
+// ReaScript API: ReaCord_SwitchToClassicUI
+bool API_ReaCord_SwitchToClassicUI() {
+    UI::RequestOpenClassicDialog();
+    return true;
+}
+
 void RegisterApiFunctions(reaper_plugin_info_t* rec) {
     if (!rec || !rec->Register) return;
 
@@ -109,6 +116,10 @@ void RegisterApiFunctions(reaper_plugin_info_t* rec) {
     rec->Register("API_ReaCord_ToggleIncognito", (void*)API_ReaCord_ToggleIncognito);
     rec->Register("APIvararg_ReaCord_ToggleIncognito", (void*)API_ReaCord_ToggleIncognito);
     rec->Register("APIdef_ReaCord_ToggleIncognito", (void*)"bool\0\0\0Toggles ReaCord incognito privacy mode");
+
+    rec->Register("API_ReaCord_SwitchToClassicUI", (void*)API_ReaCord_SwitchToClassicUI);
+    rec->Register("APIvararg_ReaCord_SwitchToClassicUI", (void*)API_ReaCord_SwitchToClassicUI);
+    rec->Register("APIdef_ReaCord_SwitchToClassicUI", (void*)"bool\0\0\0Requests REAPER to open the classic native ReaCord settings dialog on the next main loop tick");
 }
 
 } // namespace ReaCord

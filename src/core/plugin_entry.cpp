@@ -44,6 +44,23 @@ static gaccel_register_t g_accel_incognito = {
 
 static void ReaCord_TimerHook() {
     Observer::Instance().OnTimerTick();
+
+    bool openClassic = UI::CheckAndResetRequestOpenClassic();
+    if (!openClassic && GetExtState) {
+        const char* req = GetExtState("ReaCord", "request_open_classic");
+        if (req && strcmp(req, "1") == 0) {
+            openClassic = true;
+        }
+    }
+
+    if (openClassic) {
+        if (DeleteExtState) {
+            DeleteExtState("ReaCord", "request_open_classic", false);
+        } else if (SetExtState) {
+            SetExtState("ReaCord", "request_open_classic", "", false);
+        }
+        UI::ShowNativeSettingsDialog(g_hInstance, GetMainHwnd ? GetMainHwnd() : nullptr);
+    }
 }
 
 static bool ReaCord_HookCommand(int command, int /*flag*/) {

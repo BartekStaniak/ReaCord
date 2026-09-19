@@ -53,6 +53,16 @@ bool LaunchReaImGuiScript() {
     return false;
 }
 
+static std::atomic<bool> g_request_open_classic{false};
+
+void RequestOpenClassicDialog() {
+    g_request_open_classic.store(true);
+}
+
+bool CheckAndResetRequestOpenClassic() {
+    return g_request_open_classic.exchange(false);
+}
+
 } // namespace UI
 } // namespace ReaCord
 

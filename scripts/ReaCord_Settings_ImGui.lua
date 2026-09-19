@@ -1,6 +1,6 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.3-beta7
+-- @version 1.0.3-beta8
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
@@ -289,18 +289,17 @@ local function Loop()
 
             reaper.ImGui_Spacing(ctx)
             if reaper.ImGui_Button(ctx, "Switch to Classic Win32 Dialog", 220, 0) then
-                local cmd = reaper.NamedCommandLookup("_REACORD_OPEN_SETTINGS_NATIVE")
-                if cmd <= 0 then
-                    cmd = reaper.NamedCommandLookup("_REACORD_OPEN_SETTINGS")
+                if reaper.ReaCord_SwitchToClassicUI then
+                    reaper.ReaCord_SwitchToClassicUI()
+                else
+                    reaper.SetExtState("ReaCord", "request_open_classic", "1", false)
+                    local cmd = reaper.NamedCommandLookup("_REACORD_OPEN_SETTINGS_NATIVE")
+                    if cmd <= 0 then cmd = reaper.NamedCommandLookup("_REACORD_OPEN_SETTINGS") end
+                    if cmd > 0 then
+                        reaper.defer(function() reaper.Main_OnCommand(cmd, 0) end)
+                    end
                 end
                 open = false
-                if cmd > 0 then
-                    reaper.defer(function()
-                        reaper.defer(function()
-                            reaper.Main_OnCommand(cmd, 0)
-                        end)
-                    end)
-                end
             end
             reaper.ImGui_SameLine(ctx)
         end
