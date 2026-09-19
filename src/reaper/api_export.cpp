@@ -11,7 +11,7 @@ extern Discord::Client g_discord_client;
 
 // ReaScript API: ReaCord_GetVersion
 const char* API_ReaCord_GetVersion() {
-    return "1.0.1";
+    return "1.0.2-beta1";
 }
 
 // ReaScript API: ReaCord_GetStatus
@@ -32,9 +32,10 @@ const char* API_ReaCord_GetConfig(const char* key) {
     else if (strcmp(key, "project_name_mode") == 0) val_buf = std::to_string(static_cast<int>(cfg.project_name_mode));
     else if (strcmp(key, "session_time_mode") == 0) val_buf = std::to_string(static_cast<int>(cfg.session_time_mode));
     else if (strcmp(key, "play_state_mode") == 0) val_buf = std::to_string(static_cast<int>(cfg.play_state_mode));
+    else if (strcmp(key, "icon_style") == 0) val_buf = std::to_string(static_cast<int>(cfg.icon_style));
     else if (strcmp(key, "show_track_count") == 0) val_buf = cfg.show_track_count ? "1" : "0";
     else if (strcmp(key, "client_id") == 0) val_buf = cfg.client_id;
-    else if (strcmp(key, "large_image_key") == 0) val_buf = cfg.large_image_key;
+    else if (strcmp(key, "large_image_key") == 0) val_buf = cfg.GetEffectiveLargeImageKey();
     else val_buf = "";
 
     return val_buf.c_str();
@@ -50,12 +51,20 @@ bool API_ReaCord_SetConfig(const char* key, const char* val) {
     else if (strcmp(key, "project_name_mode") == 0) cfg.project_name_mode = static_cast<ProjectNameMode>(std::atoi(val));
     else if (strcmp(key, "session_time_mode") == 0) cfg.session_time_mode = static_cast<SessionTimeMode>(std::atoi(val));
     else if (strcmp(key, "play_state_mode") == 0) cfg.play_state_mode = static_cast<PlayStateMode>(std::atoi(val));
+    else if (strcmp(key, "icon_style") == 0) {
+        cfg.icon_style = static_cast<IconStyle>(std::atoi(val));
+        cfg.large_image_key = (cfg.icon_style == IconStyle::ReaCordHybrid) ? "reacord_logo" : "reaper_logo";
+    }
     else if (strcmp(key, "show_track_count") == 0) cfg.show_track_count = (strcmp(val, "1") == 0);
     else if (strcmp(key, "client_id") == 0) {
         cfg.client_id = val;
         g_discord_client.SetClientId(cfg.client_id);
     }
-    else if (strcmp(key, "large_image_key") == 0) cfg.large_image_key = val;
+    else if (strcmp(key, "large_image_key") == 0) {
+        cfg.large_image_key = val;
+        if (cfg.large_image_key == "reacord_logo") cfg.icon_style = IconStyle::ReaCordHybrid;
+        else if (cfg.large_image_key == "reaper_logo") cfg.icon_style = IconStyle::ReaperClassic;
+    }
     else return false;
 
     cfg.Save();

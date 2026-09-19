@@ -47,7 +47,15 @@ void Config::Load() {
     if (!IsValidClientId(client_id) || client_id == "123456789012345678") {
         client_id = REACORD_DEFAULT_CLIENT_ID;
     }
-    large_image_key = ReadExt("large_image_key", "reaper_logo");
+    large_image_key = ReadExt("large_image_key", "");
+    icon_style = static_cast<IconStyle>(std::atoi(ReadExt("icon_style", "0").c_str()));
+    if (large_image_key == "reacord_logo") {
+        icon_style = IconStyle::ReaCordHybrid;
+    } else if (large_image_key == "reaper_logo") {
+        icon_style = IconStyle::ReaperClassic;
+    } else if (large_image_key.empty()) {
+        large_image_key = (icon_style == IconStyle::ReaCordHybrid) ? "reacord_logo" : "reaper_logo";
+    }
     idle_timeout_mins = std::atoi(ReadExt("idle_timeout_mins", "15").c_str());
 }
 
@@ -57,9 +65,10 @@ void Config::Save() const {
     WriteExt("project_name_mode", std::to_string(static_cast<int>(project_name_mode)));
     WriteExt("session_time_mode", std::to_string(static_cast<int>(session_time_mode)));
     WriteExt("play_state_mode", std::to_string(static_cast<int>(play_state_mode)));
+    WriteExt("icon_style", std::to_string(static_cast<int>(icon_style)));
     WriteExt("show_track_count", show_track_count ? "1" : "0");
     WriteExt("client_id", client_id);
-    WriteExt("large_image_key", large_image_key);
+    WriteExt("large_image_key", GetEffectiveLargeImageKey());
     WriteExt("idle_timeout_mins", std::to_string(idle_timeout_mins));
 }
 

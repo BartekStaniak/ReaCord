@@ -55,7 +55,7 @@ void Observer::OnTimerTick() {
 
     Discord::Activity act;
     act.is_active = true;
-    act.large_image = cfg.large_image_key.empty() ? "reaper_logo" : cfg.large_image_key;
+    act.large_image = cfg.GetEffectiveLargeImageKey();
     act.large_text = "Cockos REAPER";
 
     // 2. Incognito Mode: simple stealth display
