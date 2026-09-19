@@ -35,6 +35,15 @@ bool LaunchReaImGuiScript() {
 
     if (AddRemoveReaScript && Main_OnCommand) {
         int cmdId = AddRemoveReaScript(true, 0, scriptPath.c_str(), true);
+#ifdef _WIN32
+        if (cmdId <= 0) {
+            std::string winPath = scriptPath;
+            for (char& c : winPath) {
+                if (c == '/') c = '\\';
+            }
+            cmdId = AddRemoveReaScript(true, 0, winPath.c_str(), true);
+        }
+#endif
         if (cmdId > 0) {
             Main_OnCommand(cmdId, 0);
             return true;
@@ -61,6 +70,7 @@ namespace UI {
 
 static void PopulateDialog(HWND hwnd) {
     Config& cfg = Config::Instance();
+    cfg.Load();
 
     // Checkboxes
     SendMessage(GetDlgItem(hwnd, IDC_ENABLE), BM_SETCHECK, cfg.enabled ? BST_CHECKED : BST_UNCHECKED, 0);
@@ -289,9 +299,8 @@ static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 
                 case IDC_BTN_OPEN_REAIMGUI:
                     SaveDialog(hwnd);
-                    if (LaunchReaImGuiScript()) {
-                        EndDialog(hwnd, IDOK);
-                    } else {
+                    EndDialog(hwnd, IDOK);
+                    if (!LaunchReaImGuiScript()) {
                         if (MB) {
                             MB("Could not find ReaCord_Settings_ImGui.lua.\nPlease ensure ReaCord is installed via ReaPack.", "ReaCord", 0);
                         }
@@ -304,11 +313,13 @@ static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 }
 
 void ShowNativeSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
+    Config::Instance().Load();
     DialogBoxParam(hInstance, MAKEINTRESOURCE(IDD_REACORD_SETTINGS), parentHwnd, DialogProc, 0);
 }
 
 void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
     Config& cfg = Config::Instance();
+    cfg.Load();
     if (cfg.prefer_reaimgui) {
         if (LaunchReaImGuiScript()) {
             return;

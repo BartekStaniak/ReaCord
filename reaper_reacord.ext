@@ -1,11 +1,10 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta5
+@version 1.0.3-beta6
 @changelog
-  + Added seamless in-dialog toggle between Classic Win32 dialog and ReaImGui
-  + Automatic 1-click launch of ReaImGui companion script from Extensions menu on macOS and Linux
-  + Option to remember preferred settings interface (Classic or ReaImGui) for Extensions menu on Windows
-  + Registered dedicated REACORD_OPEN_SETTINGS_NATIVE and REACORD_OPEN_SETTINGS_REAIMGUI actions
+  + Fix ReaImGui window lingering on screen when switching to classic Win32 dialog (destroy context & defer)
+  + Fix preference persistence for Extensions menu default UI (remove reset bug, reload config before opening dialog)
+  + Synchronize ExtState directly in SetConfig to guarantee consistency across C++ and ReaScript
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib
