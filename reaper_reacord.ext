@@ -1,14 +1,10 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.1
+@version 1.0.2-beta1
 @changelog
-  + Security hardening: named pipe client impersonation defense (SECURITY_SQOS_PRESENT)
-  + Safe bounded memory allocation for incoming IPC frames
-  + Thread-local string buffers for ReaScript C API exports
-  + Robust numeric sanitization for custom Discord Client IDs
-  + Compiler & linker exploit mitigations (ASLR, DEP, Control Flow Guard, Stack Canaries)
-  + New official diagonal-split ReaCord emblem
-  + Terms of Service & Privacy Policy for Discord Developer Portal verification
+  + Profile Card Logo selection: choose between Classic REAPER guitar pick and ReaCord hybrid emblem
+  + Configurable in both native SWELL dialog and ReaImGui companion
+  + Pre-release beta test for community feedback
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

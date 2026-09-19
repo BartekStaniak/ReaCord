@@ -16,3 +16,4 @@
 #define IDC_APPLY                  1010
 #define IDC_BTN_RESET_DEFAULT      1011
 #define IDC_BTN_HELP               1012
+#define IDC_COMBO_ICON_STYLE       1013

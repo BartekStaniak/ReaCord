@@ -1,6 +1,6 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.1
+-- @version 1.0.2-beta1
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
@@ -45,6 +45,11 @@ local incognito = GetConfig("incognito", "0") == "1"
 local proj_mode = tonumber(GetConfig("project_name_mode", "1")) or 1
 local time_mode = tonumber(GetConfig("session_time_mode", "1")) or 1
 local play_mode = tonumber(GetConfig("play_state_mode", "2")) or 2
+local icon_style = tonumber(GetConfig("icon_style", "0")) or 0
+local large_key = GetConfig("large_image_key", "")
+if large_key == "reacord_logo" then icon_style = 1
+elseif large_key == "reaper_logo" then icon_style = 0 end
+
 local DEFAULT_CLIENT_ID = "1462972195658534965"
 local client_id = GetConfig("client_id", DEFAULT_CLIENT_ID)
 if client_id == "" or client_id == "123456789012345678" then 
@@ -55,6 +60,7 @@ end
 local proj_options = { "Hidden", "Project Name Only", "Full Path", "Generic (\"Working on a Project\")" }
 local time_options = { "Hidden", "Project Elapsed Time", "REAPER Uptime" }
 local play_options = { "Hidden", "Simple (Playing, Recording)", "Detailed with Tempo (BPM)" }
+local icon_options = { "REAPER Logo (Classic)", "ReaCord Emblem (Hybrid)" }
 
 local function RenderDiscordPreview()
     reaper.ImGui_SeparatorText(ctx, "Live Discord Profile Preview")
@@ -69,7 +75,8 @@ local function RenderDiscordPreview()
 
         -- Large icon placeholder
         reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_Button(), 0x2B2D31FF)
-        reaper.ImGui_Button(ctx, "DAW\nLogo", 64, 64)
+        local logo_label = (icon_style == 1) and "ReaCord\nHybrid" or "REAPER\nClassic"
+        reaper.ImGui_Button(ctx, logo_label, 64, 64)
         reaper.ImGui_PopStyleColor(ctx)
 
         reaper.ImGui_SameLine(ctx, 0, 16)
@@ -181,6 +188,19 @@ local function Loop()
                 if reaper.ImGui_Selectable(ctx, opt, is_selected) then
                     play_mode = i - 1
                     SetConfig("play_state_mode", play_mode)
+                end
+            end
+            reaper.ImGui_EndCombo(ctx)
+        end
+
+        -- Profile Card Logo Combo
+        if reaper.ImGui_BeginCombo(ctx, "Profile Card Logo", icon_options[icon_style + 1]) then
+            for i, opt in ipairs(icon_options) do
+                local is_selected = (icon_style == (i - 1))
+                if reaper.ImGui_Selectable(ctx, opt, is_selected) then
+                    icon_style = i - 1
+                    SetConfig("icon_style", icon_style)
+                    SetConfig("large_image_key", (icon_style == 1) and "reacord_logo" or "reaper_logo")
                 end
             end
             reaper.ImGui_EndCombo(ctx)
