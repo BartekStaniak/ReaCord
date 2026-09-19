@@ -13,6 +13,8 @@ Discord::Client g_discord_client;
 REAPER_PLUGIN_HINSTANCE g_hInstance = nullptr;
 
 static int g_cmd_settings = 0;
+static int g_cmd_settings_native = 0;
+static int g_cmd_settings_reaimgui = 0;
 static int g_cmd_incognito = 0;
 
 typedef struct {
@@ -23,6 +25,16 @@ typedef struct {
 static gaccel_register_t g_accel_settings = {
     { 0, 0, 0 },
     "ReaCord: Open Settings..."
+};
+
+static gaccel_register_t g_accel_settings_native = {
+    { 0, 0, 0 },
+    "ReaCord: Open Classic Win32 Settings"
+};
+
+static gaccel_register_t g_accel_settings_reaimgui = {
+    { 0, 0, 0 },
+    "ReaCord: Open Modern Settings (ReaImGui)"
 };
 
 static gaccel_register_t g_accel_incognito = {
@@ -37,6 +49,16 @@ static void ReaCord_TimerHook() {
 static bool ReaCord_HookCommand(int command, int /*flag*/) {
     if (command && command == g_cmd_settings) {
         UI::ShowSettingsDialog(g_hInstance, GetMainHwnd ? GetMainHwnd() : nullptr);
+        return true;
+    }
+    if (command && command == g_cmd_settings_native) {
+        UI::ShowNativeSettingsDialog(g_hInstance, GetMainHwnd ? GetMainHwnd() : nullptr);
+        return true;
+    }
+    if (command && command == g_cmd_settings_reaimgui) {
+        if (!UI::LaunchReaImGuiScript()) {
+            UI::ShowSettingsDialog(g_hInstance, GetMainHwnd ? GetMainHwnd() : nullptr);
+        }
         return true;
     }
     if (command && command == g_cmd_incognito) {
@@ -116,6 +138,14 @@ extern "C" REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(
     ReaCord::g_cmd_settings = rec->Register("command_id", (void*)"REACORD_OPEN_SETTINGS");
     ReaCord::g_accel_settings.accel.cmd = static_cast<WORD>(ReaCord::g_cmd_settings);
     rec->Register("gaccel", &ReaCord::g_accel_settings);
+
+    ReaCord::g_cmd_settings_native = rec->Register("command_id", (void*)"REACORD_OPEN_SETTINGS_NATIVE");
+    ReaCord::g_accel_settings_native.accel.cmd = static_cast<WORD>(ReaCord::g_cmd_settings_native);
+    rec->Register("gaccel", &ReaCord::g_accel_settings_native);
+
+    ReaCord::g_cmd_settings_reaimgui = rec->Register("command_id", (void*)"REACORD_OPEN_SETTINGS_REAIMGUI");
+    ReaCord::g_accel_settings_reaimgui.accel.cmd = static_cast<WORD>(ReaCord::g_cmd_settings_reaimgui);
+    rec->Register("gaccel", &ReaCord::g_accel_settings_reaimgui);
 
     ReaCord::g_cmd_incognito = rec->Register("command_id", (void*)"REACORD_TOGGLE_INCOGNITO");
     ReaCord::g_accel_incognito.accel.cmd = static_cast<WORD>(ReaCord::g_cmd_incognito);

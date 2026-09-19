@@ -45,6 +45,7 @@ struct Config {
     std::string client_id = REACORD_DEFAULT_CLIENT_ID; // Official ReaCord App ID
     std::string large_image_key = "reaper_logo";
     int idle_timeout_mins = 15;
+    bool prefer_reaimgui = false;
 
     inline std::string GetEffectiveLargeImageKey() const {
         if (!large_image_key.empty() && large_image_key != "reaper_logo" && large_image_key != "reacord_logo") {

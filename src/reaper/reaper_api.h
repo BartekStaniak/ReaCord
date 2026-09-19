@@ -40,6 +40,8 @@
 #define REAPERAPI_WANT_NamedCommandLookup
 #define REAPERAPI_WANT_Main_OnCommand
 #define REAPERAPI_WANT_AddExtensionsMainMenu
+#define REAPERAPI_WANT_AddRemoveReaScript
+#define REAPERAPI_WANT_GetResourcePath
 
 #include "reaper_plugin.h"
 #include "reaper_plugin_functions.h"

@@ -1,6 +1,51 @@
 #include "settings_dialog.hpp"
 #include "core/config.hpp"
 #include "discord/discord_ipc.hpp"
+#include "reaper/reaper_api.h"
+
+namespace ReaCord {
+namespace UI {
+
+bool LaunchReaImGuiScript() {
+    if (!GetResourcePath) return false;
+
+    const char* resPath = GetResourcePath();
+    if (!resPath || !resPath[0]) return false;
+
+    std::string candidatePaths[] = {
+        std::string(resPath) + "/Scripts/ReaCord/Extensions/scripts/ReaCord_Settings_ImGui.lua",
+        std::string(resPath) + "/Scripts/ReaCord/scripts/ReaCord_Settings_ImGui.lua",
+        std::string(resPath) + "/Scripts/ReaCord/ReaCord_Settings_ImGui.lua",
+        std::string(resPath) + "/Scripts/ReaCord_Settings_ImGui.lua"
+    };
+
+    std::string scriptPath;
+    for (const auto& p : candidatePaths) {
+        FILE* f = fopen(p.c_str(), "rb");
+        if (f) {
+            fclose(f);
+            scriptPath = p;
+            break;
+        }
+    }
+
+    if (scriptPath.empty()) {
+        return false;
+    }
+
+    if (AddRemoveReaScript && Main_OnCommand) {
+        int cmdId = AddRemoveReaScript(true, 0, scriptPath.c_str(), true);
+        if (cmdId > 0) {
+            Main_OnCommand(cmdId, 0);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+} // namespace UI
+} // namespace ReaCord
 
 #ifdef _WIN32
 #include <windows.h>
@@ -21,6 +66,7 @@ static void PopulateDialog(HWND hwnd) {
     SendMessage(GetDlgItem(hwnd, IDC_ENABLE), BM_SETCHECK, cfg.enabled ? BST_CHECKED : BST_UNCHECKED, 0);
     SendMessage(GetDlgItem(hwnd, IDC_INCOGNITO), BM_SETCHECK, cfg.incognito ? BST_CHECKED : BST_UNCHECKED, 0);
     SendMessage(GetDlgItem(hwnd, IDC_CHECK_TRACK_COUNT), BM_SETCHECK, cfg.show_track_count ? BST_CHECKED : BST_UNCHECKED, 0);
+    SendMessage(GetDlgItem(hwnd, IDC_CHECK_PREFER_REAIMGUI), BM_SETCHECK, cfg.prefer_reaimgui ? BST_CHECKED : BST_UNCHECKED, 0);
 
     // Combos
     HWND cbProj = GetDlgItem(hwnd, IDC_COMBO_PROJ_NAME);
@@ -76,6 +122,7 @@ static void SaveDialog(HWND hwnd) {
     cfg.enabled = (SendMessage(GetDlgItem(hwnd, IDC_ENABLE), BM_GETCHECK, 0, 0) == BST_CHECKED);
     cfg.incognito = (SendMessage(GetDlgItem(hwnd, IDC_INCOGNITO), BM_GETCHECK, 0, 0) == BST_CHECKED);
     cfg.show_track_count = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_TRACK_COUNT), BM_GETCHECK, 0, 0) == BST_CHECKED);
+    cfg.prefer_reaimgui = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_PREFER_REAIMGUI), BM_GETCHECK, 0, 0) == BST_CHECKED);
     cfg.extstate_in_state_text = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_EXTSTATE_TEXT), BM_GETCHECK, 0, 0) == BST_CHECKED);
 
     cfg.project_name_mode = static_cast<ProjectNameMode>(SendMessage(GetDlgItem(hwnd, IDC_COMBO_PROJ_NAME), CB_GETCURSEL, 0, 0));
@@ -146,6 +193,7 @@ static void SetAdvancedExpanded(HWND hwnd, bool expand) {
     const int bottom_controls[] = {
         IDC_STATUS_TEXT,
         IDC_BTN_HELP,
+        IDC_BTN_OPEN_REAIMGUI,
         IDOK,
         IDCANCEL,
         IDC_APPLY
@@ -238,14 +286,35 @@ static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
                 case IDC_BTN_HELP:
                     ShellExecuteA(hwnd, "open", "https://github.com/BartekStaniak/ReaCord/blob/main/docs/DISCORD_APP_SETUP.md", NULL, NULL, SW_SHOWNORMAL);
                     return TRUE;
+
+                case IDC_BTN_OPEN_REAIMGUI:
+                    SaveDialog(hwnd);
+                    if (LaunchReaImGuiScript()) {
+                        EndDialog(hwnd, IDOK);
+                    } else {
+                        if (MB) {
+                            MB("Could not find ReaCord_Settings_ImGui.lua.\nPlease ensure ReaCord is installed via ReaPack.", "ReaCord", 0);
+                        }
+                    }
+                    return TRUE;
             }
             break;
     }
     return FALSE;
 }
 
-void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
+void ShowNativeSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
     DialogBoxParam(hInstance, MAKEINTRESOURCE(IDD_REACORD_SETTINGS), parentHwnd, DialogProc, 0);
+}
+
+void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
+    Config& cfg = Config::Instance();
+    if (cfg.prefer_reaimgui) {
+        if (LaunchReaImGuiScript()) {
+            return;
+        }
+    }
+    ShowNativeSettingsDialog(hInstance, parentHwnd);
 }
 
 } // namespace UI
@@ -253,15 +322,21 @@ void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
 
 #else // Non-Windows (macOS & Linux)
 
-#include "reaper/reaper_api.h"
-
 namespace ReaCord {
 
 extern Discord::Client g_discord_client;
 
 namespace UI {
 
+void ShowNativeSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
+    ShowSettingsDialog(hInstance, parentHwnd);
+}
+
 void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd) {
+    if (LaunchReaImGuiScript()) {
+        return;
+    }
+
     if (MB) {
         std::string msg = "ReaCord Discord Rich Presence\n\n"
                           "Status: " + g_discord_client.GetStatusString() + "\n"

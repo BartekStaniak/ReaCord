@@ -60,6 +60,7 @@ void Config::Load() {
     extstate_key = ReadExt("extstate_key", "active_time");
     extstate_in_state_text = (ReadExt("extstate_in_state_text", "0") == "1");
     idle_timeout_mins = std::atoi(ReadExt("idle_timeout_mins", "15").c_str());
+    prefer_reaimgui = (ReadExt("prefer_reaimgui", "0") == "1");
 }
 
 void Config::Save() const {
@@ -76,6 +77,7 @@ void Config::Save() const {
     WriteExt("extstate_key", extstate_key);
     WriteExt("extstate_in_state_text", extstate_in_state_text ? "1" : "0");
     WriteExt("idle_timeout_mins", std::to_string(idle_timeout_mins));
+    WriteExt("prefer_reaimgui", prefer_reaimgui ? "1" : "0");
 }
 
 } // namespace ReaCord

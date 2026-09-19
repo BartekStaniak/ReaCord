@@ -11,7 +11,7 @@ extern Discord::Client g_discord_client;
 
 // ReaScript API: ReaCord_GetVersion
 const char* API_ReaCord_GetVersion() {
-    return "1.0.3-beta4";
+    return "1.0.3-beta5";
 }
 
 // ReaScript API: ReaCord_GetStatus
@@ -39,6 +39,7 @@ const char* API_ReaCord_GetConfig(const char* key) {
     else if (strcmp(key, "extstate_section") == 0) val_buf = cfg.extstate_section;
     else if (strcmp(key, "extstate_key") == 0) val_buf = cfg.extstate_key;
     else if (strcmp(key, "extstate_in_state_text") == 0) val_buf = cfg.extstate_in_state_text ? "1" : "0";
+    else if (strcmp(key, "prefer_reaimgui") == 0) val_buf = cfg.prefer_reaimgui ? "1" : "0";
     else val_buf = "";
 
     return val_buf.c_str();
@@ -71,6 +72,7 @@ bool API_ReaCord_SetConfig(const char* key, const char* val) {
     else if (strcmp(key, "extstate_section") == 0) cfg.extstate_section = val;
     else if (strcmp(key, "extstate_key") == 0) cfg.extstate_key = val;
     else if (strcmp(key, "extstate_in_state_text") == 0) cfg.extstate_in_state_text = (strcmp(val, "1") == 0);
+    else if (strcmp(key, "prefer_reaimgui") == 0) cfg.prefer_reaimgui = (strcmp(val, "1") == 0);
     else return false;
 
     cfg.Save();

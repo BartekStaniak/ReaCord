@@ -5,6 +5,18 @@
       <metadata>
         <link rel="website">https://github.com/BartekStaniak/ReaCord</link>
       </metadata>
+      <version name="1.0.3-beta5" author="Bartek Staniak" time="2026-09-19T21:20:00Z">
+        <changelog><![CDATA[Dual Interface & 1-Click Launch:
++ Seamless in-dialog toggle between Classic Win32 dialog and Modern ReaImGui on Windows
++ Direct 1-click launch of ReaImGui companion script from Extensions menu on macOS and Linux
++ Option to remember preferred settings interface (Classic or ReaImGui) for Extensions menu
++ Dedicated REACORD_OPEN_SETTINGS_NATIVE and REACORD_OPEN_SETTINGS_REAIMGUI actions]]></changelog>
+        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta5/reaper_reacord64.dll</source>
+        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta5/reaper_reacord.dylib</source>
+        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta5/reaper_reacord.dylib</source>
+        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta5/reaper_reacord-x86_64.so</source>
+        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/develop/scripts/ReaCord_Settings_ImGui.lua</source>
+      </version>
       <version name="1.0.3-beta4" author="Bartek Staniak" time="2026-09-19T21:05:00Z">
         <changelog><![CDATA[Padding & Layout Refinements:
 + Fixed bottom whitespace under action buttons in Windows settings dialog

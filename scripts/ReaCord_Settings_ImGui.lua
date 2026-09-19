@@ -1,6 +1,6 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.3-beta4
+-- @version 1.0.3-beta5
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
@@ -60,6 +60,7 @@ end
 local extstate_sec = GetConfig("extstate_section", "PROJECT_TIME")
 local extstate_key = GetConfig("extstate_key", "active_time")
 local extstate_text = GetConfig("extstate_in_state_text", "0") == "1"
+local prefer_reaimgui = GetConfig("prefer_reaimgui", "0") == "1"
 
 local proj_options = { "Hidden", "Project Name Only", "Full Path", "Generic (\"Working on a Project\")" }
 local time_options = { "Hidden", "Project Elapsed Time", "REAPER Uptime", "Project Active Time (ExtState)" }
@@ -280,6 +281,28 @@ local function Loop()
         RenderDiscordPreview()
 
         reaper.ImGui_Spacing(ctx)
+        local is_windows = reaper.GetOS():match("Win") ~= nil
+        if is_windows then
+            changed, prefer_reaimgui = reaper.ImGui_Checkbox(ctx, "Use Modern ReaImGui by default for Extensions menu", prefer_reaimgui)
+            if changed then
+                SetConfig("prefer_reaimgui", prefer_reaimgui and "1" or "0")
+            end
+
+            reaper.ImGui_Spacing(ctx)
+            if reaper.ImGui_Button(ctx, "Switch to Classic Win32 Dialog", 220, 0) then
+                SetConfig("prefer_reaimgui", "0")
+                local cmd = reaper.NamedCommandLookup("_REACORD_OPEN_SETTINGS_NATIVE")
+                if cmd <= 0 then
+                    cmd = reaper.NamedCommandLookup("_REACORD_OPEN_SETTINGS")
+                end
+                if cmd > 0 then
+                    reaper.Main_OnCommand(cmd, 0)
+                end
+                open = false
+            end
+            reaper.ImGui_SameLine(ctx)
+        end
+
         if reaper.ImGui_Button(ctx, "Close", 120, 0) then
             open = false
         end
