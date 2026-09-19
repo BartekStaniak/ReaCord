@@ -1,8 +1,8 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta10
+@version 1.0.3-beta11
 @changelog
-  + Add version number to window headers (Win32 dialog & ReaImGui)
+  + Move "Use Modern ReaImGui by default" checkbox under Advanced Settings in Win32 dialog
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

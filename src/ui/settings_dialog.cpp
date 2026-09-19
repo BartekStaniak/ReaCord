@@ -214,7 +214,7 @@ static void SaveDialog(HWND hwnd) {
 }
 
 static bool s_advanced_expanded = true;
-static int s_delta_y = 82;
+static int s_delta_y = 96;
 
 static void SetAdvancedExpanded(HWND hwnd, bool expand) {
     if (s_advanced_expanded == expand) return;
@@ -230,7 +230,8 @@ static void SetAdvancedExpanded(HWND hwnd, bool expand) {
         IDC_STATIC_EXTSTATE,
         IDC_EDIT_EXTSTATE_SECTION,
         IDC_EDIT_EXTSTATE_KEY,
-        IDC_CHECK_EXTSTATE_TEXT
+        IDC_CHECK_EXTSTATE_TEXT,
+        IDC_CHECK_PREFER_REAIMGUI
     };
 
     for (int id : advanced_controls) {
@@ -283,7 +284,7 @@ static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
                 GetWindowRect(hGrp, &rcGrp);
                 GetWindowRect(hChk, &rcChk);
                 s_delta_y = rcGrp.bottom - rcChk.bottom;
-                if (s_delta_y <= 0) s_delta_y = 82;
+                if (s_delta_y <= 0) s_delta_y = 96;
             }
 
             Config& cfg = Config::Instance();
