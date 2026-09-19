@@ -5,6 +5,16 @@
       <metadata>
         <link rel="website">https://github.com/BartekStaniak/ReaCord</link>
       </metadata>
+      <version name="1.0.3-beta7" author="Bartek Staniak" time="2026-09-19T21:34:00Z">
+        <changelog><![CDATA[Fix ReaScript Error on Window Close:
++ Fix nil value error on window close by removing non-existent ImGui_DestroyContext call
++ Refine window closing and seamless double-deferred switch into classic Win32 dialog]]></changelog>
+        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta7/reaper_reacord64.dll</source>
+        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta7/reaper_reacord.dylib</source>
+        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta7/reaper_reacord.dylib</source>
+        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3-beta7/reaper_reacord-x86_64.so</source>
+        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/develop/scripts/ReaCord_Settings_ImGui.lua</source>
+      </version>
       <version name="1.0.3-beta6" author="Bartek Staniak" time="2026-09-19T21:28:00Z">
         <changelog><![CDATA[Fixes for UI Switcher & Preference:
 + Fix ReaImGui window lingering on screen when switching to classic Win32 dialog (destroy context & defer)
