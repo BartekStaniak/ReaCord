@@ -1,6 +1,7 @@
 #include "core/config.hpp"
 #include "discord/discord_ipc.hpp"
 #include "reaper/reaper_api.h"
+#include "ui/settings_dialog.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -11,7 +12,7 @@ extern Discord::Client g_discord_client;
 
 // ReaScript API: ReaCord_GetVersion
 const char* API_ReaCord_GetVersion() {
-    return "1.0.2";
+    return REACORD_VERSION;
 }
 
 // ReaScript API: ReaCord_GetStatus
@@ -36,6 +37,10 @@ const char* API_ReaCord_GetConfig(const char* key) {
     else if (strcmp(key, "show_track_count") == 0) val_buf = cfg.show_track_count ? "1" : "0";
     else if (strcmp(key, "client_id") == 0) val_buf = cfg.client_id;
     else if (strcmp(key, "large_image_key") == 0) val_buf = cfg.GetEffectiveLargeImageKey();
+    else if (strcmp(key, "extstate_section") == 0) val_buf = cfg.extstate_section;
+    else if (strcmp(key, "extstate_key") == 0) val_buf = cfg.extstate_key;
+    else if (strcmp(key, "extstate_in_state_text") == 0) val_buf = cfg.extstate_in_state_text ? "1" : "0";
+    else if (strcmp(key, "prefer_reaimgui") == 0) val_buf = cfg.prefer_reaimgui ? "1" : "0";
     else val_buf = "";
 
     return val_buf.c_str();
@@ -65,6 +70,10 @@ bool API_ReaCord_SetConfig(const char* key, const char* val) {
         if (cfg.large_image_key == "reacord_logo") cfg.icon_style = IconStyle::ReaCordHybrid;
         else if (cfg.large_image_key == "reaper_logo") cfg.icon_style = IconStyle::ReaperClassic;
     }
+    else if (strcmp(key, "extstate_section") == 0) cfg.extstate_section = val;
+    else if (strcmp(key, "extstate_key") == 0) cfg.extstate_key = val;
+    else if (strcmp(key, "extstate_in_state_text") == 0) cfg.extstate_in_state_text = (strcmp(val, "1") == 0);
+    else if (strcmp(key, "prefer_reaimgui") == 0) cfg.prefer_reaimgui = (strcmp(val, "1") == 0);
     else return false;
 
     cfg.Save();
@@ -77,6 +86,12 @@ bool API_ReaCord_ToggleIncognito() {
     cfg.incognito = !cfg.incognito;
     cfg.Save();
     return cfg.incognito;
+}
+
+// ReaScript API: ReaCord_SwitchToClassicUI
+bool API_ReaCord_SwitchToClassicUI() {
+    UI::RequestOpenClassicDialog();
+    return true;
 }
 
 void RegisterApiFunctions(reaper_plugin_info_t* rec) {
@@ -101,6 +116,10 @@ void RegisterApiFunctions(reaper_plugin_info_t* rec) {
     rec->Register("API_ReaCord_ToggleIncognito", (void*)API_ReaCord_ToggleIncognito);
     rec->Register("APIvararg_ReaCord_ToggleIncognito", (void*)API_ReaCord_ToggleIncognito);
     rec->Register("APIdef_ReaCord_ToggleIncognito", (void*)"bool\0\0\0Toggles ReaCord incognito privacy mode");
+
+    rec->Register("API_ReaCord_SwitchToClassicUI", (void*)API_ReaCord_SwitchToClassicUI);
+    rec->Register("APIvararg_ReaCord_SwitchToClassicUI", (void*)API_ReaCord_SwitchToClassicUI);
+    rec->Register("APIdef_ReaCord_SwitchToClassicUI", (void*)"bool\0\0\0Requests REAPER to open the classic native ReaCord settings dialog on the next main loop tick");
 }
 
 } // namespace ReaCord

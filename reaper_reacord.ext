@@ -1,9 +1,8 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.2
+@version 1.0.3-beta12
 @changelog
-  + Profile Card Logo selection: choose between Classic REAPER guitar pick and ReaCord hybrid emblem
-  + Configurable in both native SWELL dialog and ReaImGui companion
+  + Optimize ReaImGui modern settings window to eliminate choppy movement when dragged
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

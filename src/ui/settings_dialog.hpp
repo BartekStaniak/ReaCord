@@ -13,6 +13,11 @@ namespace ReaCord {
 namespace UI {
 
 void ShowSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd);
+void ShowNativeSettingsDialog(REACORD_HINSTANCE hInstance, REACORD_HWND parentHwnd);
+bool LaunchReaImGuiScript();
+void RequestOpenClassicDialog();
+bool CheckAndResetRequestOpenClassic();
+void HideReaImGuiWindow();
 
 } // namespace UI
 } // namespace ReaCord
