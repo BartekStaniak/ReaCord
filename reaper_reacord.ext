@@ -1,12 +1,10 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta3
+@version 1.0.3-beta4
 @changelog
-  + Discord Application Client ID moved into Advanced Settings section
-  + Ultra-compact default dialog layout (only 198 DLUs tall)
-  + Dedicated full-width status line preventing any text clipping or wrapping
-  + Fixed literal ampersands (&&) in Win32 dialog controls
-  + Balanced action button bar (Help on left, OK/Cancel/Apply on right)
+  + Fixed bottom whitespace under action buttons in Windows settings dialog
+  + Symmetric 10-DLU outer margins and proportional button breathing room
+  + Dynamic DPI-independent collapse/expand delta matching control boundaries exactly
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

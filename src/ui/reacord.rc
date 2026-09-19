@@ -1,7 +1,7 @@
 #include "resource.h"
 #include <windows.h>
 
-IDD_REACORD_SETTINGS DIALOGEX 0, 0, 280, 296
+IDD_REACORD_SETTINGS DIALOGEX 0, 0, 280, 284
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ReaCord - Discord Rich Presence Settings"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1

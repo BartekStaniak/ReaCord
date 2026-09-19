@@ -117,7 +117,7 @@ static void SaveDialog(HWND hwnd) {
 }
 
 static bool s_advanced_expanded = true;
-static int s_delta_y = 86;
+static int s_delta_y = 82;
 
 static void SetAdvancedExpanded(HWND hwnd, bool expand) {
     if (s_advanced_expanded == expand) return;
@@ -175,11 +175,13 @@ static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
             PopulateDialog(hwnd);
 
             HWND hGrp = GetDlgItem(hwnd, IDC_GROUP_ADVANCED);
-            if (hGrp) {
-                RECT rcGrp;
+            HWND hChk = GetDlgItem(hwnd, IDC_CHECK_SHOW_ADVANCED);
+            if (hGrp && hChk) {
+                RECT rcGrp, rcChk;
                 GetWindowRect(hGrp, &rcGrp);
-                s_delta_y = (rcGrp.bottom - rcGrp.top) + 8;
-                if (s_delta_y <= 0) s_delta_y = 86;
+                GetWindowRect(hChk, &rcChk);
+                s_delta_y = rcGrp.bottom - rcChk.bottom;
+                if (s_delta_y <= 0) s_delta_y = 82;
             }
 
             Config& cfg = Config::Instance();
