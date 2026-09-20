@@ -99,6 +99,8 @@ bool API_ReaCord_SwitchToClassicUI() {
 
 // ReaScript API: ReaCord_TriggerUpdate
 bool API_ReaCord_TriggerUpdate() {
+    Config::Instance().Load();
+    g_discord_client.SetClientId(Config::Instance().client_id);
     Observer::Instance().TriggerInstantUpdate();
     return true;
 }

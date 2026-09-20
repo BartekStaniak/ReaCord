@@ -1,11 +1,11 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.4-beta2
+-- @version 1.0.4-beta3
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
 
-local SCRIPT_VERSION = "1.0.4-beta2"
+local SCRIPT_VERSION = "1.0.4-beta3"
 local ctx
 
 -- Verify ReaImGui availability
@@ -369,17 +369,26 @@ local function Loop()
         end
 
         -- Action buttons: Apply and Close
-        if reaper.ImGui_Button(ctx, "Apply", 100, 0) then
-            ApplySettings()
-        end
-        reaper.ImGui_SameLine(ctx)
-        if reaper.ImGui_Button(ctx, "Close", 100, 0) then
-            open = false
+        local is_applied = (reaper.time_precise() < apply_feedback_timer)
+        if is_applied then
+            reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_Button(), 0x23A55AFF)
+            reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_ButtonHovered(), 0x2D7D46FF)
+            reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_ButtonActive(), 0x1F8B4CFF)
+            reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_Text(), 0xFFFFFFFF)
         end
 
-        if reaper.time_precise() < apply_feedback_timer then
-            reaper.ImGui_SameLine(ctx)
-            reaper.ImGui_TextColored(ctx, 0x57F287FF, "Applied to Discord!")
+        if reaper.ImGui_Button(ctx, is_applied and "Applied!" or "Apply", 100, 0) then
+            ApplySettings()
+        end
+
+        if is_applied then
+            reaper.ImGui_PopStyleColor(ctx, 4)
+        end
+
+        reaper.ImGui_SameLine(ctx)
+        if reaper.ImGui_Button(ctx, "Close", 100, 0) then
+            ApplySettings()
+            open = false
         end
 
         reaper.ImGui_End(ctx)
@@ -387,6 +396,8 @@ local function Loop()
 
     if open then
         reaper.defer(Loop)
+    else
+        ApplySettings()
     end
 end
 
