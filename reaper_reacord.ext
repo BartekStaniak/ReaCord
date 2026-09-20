@@ -1,11 +1,12 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.4-beta1
+@version 1.0.4-beta2
 @changelog
-  + Event-driven IReaperControlSurface (CSurf) for instant zero-latency transport & track updates
-  + Eliminate 1.5s timer polling latency when switching between Play, Pause, Stop, and Record
-  + Instant worker thread wake-up on activity changes via condition variable predicate fix
-  + Reduced rate-limiting cooldown to 1000ms with adaptive sleep scheduling
+  + Fix ReaScript APIvararg wrappers so settings changes immediately persist in C++ core
+  + Add Apply button in ReaImGui modern settings with instant visual feedback
+  + Add ReaCord_TriggerUpdate API for immediate presence synchronization
+  + Stabilize ExtState timer anchoring to prevent clock jitter and rate limit spam
+  + Add UI clarification note for Project Elapsed Time
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

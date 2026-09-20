@@ -12,6 +12,7 @@ void Observer::Initialize(Discord::Client* client) {
     app_start_time_ = static_cast<int64_t>(std::time(nullptr));
     project_start_time_ = app_start_time_;
     last_poll_time_ = 0.0;
+    last_extstate_anchor_ = 0;
     last_project_name_.clear();
 }
 
@@ -141,6 +142,7 @@ void Observer::PollState(bool force) {
     if (raw_proj_path != last_project_name_) {
         last_project_name_ = raw_proj_path;
         project_start_time_ = static_cast<int64_t>(std::time(nullptr));
+        last_extstate_anchor_ = 0;
     }
 
     switch (cfg.project_name_mode) {
@@ -179,7 +181,17 @@ void Observer::PollState(bool force) {
             break;
         case SessionTimeMode::ProjectExtState:
             if (extstate_seconds > 0) {
-                act.start_time = static_cast<int64_t>(std::time(nullptr)) - extstate_seconds;
+                int64_t current_time = static_cast<int64_t>(std::time(nullptr));
+                if (last_extstate_anchor_ == 0) {
+                    last_extstate_anchor_ = current_time - extstate_seconds;
+                } else {
+                    int64_t calculated_elapsed = current_time - last_extstate_anchor_;
+                    // Only re-anchor if drift exceeds 10s to prevent clock jitter and rate limit spam
+                    if (std::abs(calculated_elapsed - extstate_seconds) > 10) {
+                        last_extstate_anchor_ = current_time - extstate_seconds;
+                    }
+                }
+                act.start_time = last_extstate_anchor_;
             } else {
                 act.start_time = project_start_time_;
             }
