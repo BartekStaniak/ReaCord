@@ -92,11 +92,20 @@ static std::string FormatDurationHuman(int64_t total_sec) {
 }
 
 void Observer::OnTimerTick() {
+    PollState(false);
+}
+
+void Observer::TriggerInstantUpdate() {
+    PollState(true);
+}
+
+void Observer::PollState(bool force) {
     if (!discord_client_) return;
 
     double now = time_precise ? time_precise() : 0.0;
-    // Throttle polling to at most once every 1.5 seconds to ensure zero CPU impact
-    if (now - last_poll_time_ < 1.5) {
+    // Throttle passive timer polling to at most once every 1.5 seconds.
+    // Event-driven triggers (from CSurf play/stop/rec/track changes) bypass this throttle.
+    if (!force && (now - last_poll_time_ < 1.5)) {
         return;
     }
     last_poll_time_ = now;

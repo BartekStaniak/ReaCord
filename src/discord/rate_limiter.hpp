@@ -42,6 +42,20 @@ public:
         return hash;
     }
 
+    // Cooldown in milliseconds between successive activity updates sent to Discord
+    static constexpr int64_t kCooldownMs = 1000;
+
+    int64_t GetRemainingCooldownMs() const {
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_send_time_).count();
+        if (elapsed >= kCooldownMs) return 0;
+        return kCooldownMs - elapsed;
+    }
+
+    bool HasActivityChanged(const Activity& act) const {
+        return HashActivity(act) != last_hash_;
+    }
+
     // Evaluates whether an activity frame should be transmitted
     bool ShouldSend(const Activity& act, bool force_send = false) {
         uint64_t current_hash = HashActivity(act);
@@ -60,8 +74,8 @@ public:
             return false;
         }
 
-        // 3. Rate limiting: Minimum 2000ms (2s) between updates
-        if (elapsed < 2000) {
+        // 3. Rate limiting: Minimum kCooldownMs between updates
+        if (elapsed < kCooldownMs) {
             return false;
         }
 
