@@ -1,8 +1,8 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta12
+@version 1.0.3-beta13
 @changelog
-  + Optimize ReaImGui modern settings window to eliminate choppy movement when dragged
+  + Re-enable AlwaysAutoResize for ReaImGui modern settings window
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib
