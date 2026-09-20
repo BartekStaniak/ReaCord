@@ -31,6 +31,7 @@ private:
     double last_poll_time_ = 0.0;
     int64_t app_start_time_ = 0;
     int64_t project_start_time_ = 0;
+    int64_t last_extstate_anchor_ = 0;
     std::string last_project_name_;
 };
 

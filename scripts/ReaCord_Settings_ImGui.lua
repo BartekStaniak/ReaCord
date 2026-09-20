@@ -1,11 +1,11 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.4-beta1
+-- @version 1.0.4-beta2
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
 
-local SCRIPT_VERSION = "1.0.4-beta1"
+local SCRIPT_VERSION = "1.0.4-beta2"
 local ctx
 
 -- Verify ReaImGui availability
@@ -94,6 +94,7 @@ local cached_status_col = 0x949BA4FF
 local cached_live_extstate = nil
 local last_status_poll = 0
 local last_extstate_poll = 0
+local apply_feedback_timer = 0
 
 local function UpdateStatusCache(force)
     local now = reaper.time_precise()
@@ -127,6 +128,29 @@ end
 -- Initial polling
 UpdateStatusCache(true)
 UpdateExtStateCache(true)
+
+local function ApplySettings()
+    SetConfig("enabled", enabled and "1" or "0")
+    SetConfig("incognito", incognito and "1" or "0")
+    SetConfig("project_name_mode", proj_mode)
+    SetConfig("session_time_mode", time_mode)
+    SetConfig("play_state_mode", play_mode)
+    SetConfig("icon_style", icon_style)
+    SetConfig("large_image_key", (icon_style == 1) and "reacord_logo" or "reaper_logo")
+    SetConfig("show_track_count", track_count and "1" or "0")
+    SetConfig("client_id", client_id)
+    SetConfig("extstate_in_state_text", extstate_text and "1" or "0")
+    SetConfig("extstate_section", extstate_sec)
+    SetConfig("extstate_key", extstate_key)
+    if is_windows then
+        SetConfig("prefer_reaimgui", prefer_reaimgui and "1" or "0")
+    end
+
+    if reaper.ReaCord_TriggerUpdate then
+        reaper.ReaCord_TriggerUpdate()
+    end
+    apply_feedback_timer = reaper.time_precise() + 2.5
+end
 
 local function RenderDiscordPreview()
     reaper.ImGui_SeparatorText(ctx, "Live Discord Profile Preview")
@@ -243,6 +267,7 @@ local function Loop()
             end
             reaper.ImGui_EndCombo(ctx)
         end
+        reaper.ImGui_TextColored(ctx, 0x80848EFF, "Project Elapsed measures open time in current REAPER session.")
 
         -- Play State Combo
         if reaper.ImGui_BeginCombo(ctx, "Play / Record State", play_options[play_mode + 1]) then
@@ -281,7 +306,7 @@ local function Loop()
 
         if adv_open then
             reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_ChildBg(), 0x232428FF)
-            if reaper.ImGui_BeginChild(ctx, "AdvancedSettingsBox", 0, 195, reaper.ImGui_ChildFlags_Borders()) then
+            if reaper.ImGui_BeginChild(ctx, "AdvancedSettingsBox", 0, 205, reaper.ImGui_ChildFlags_Borders()) then
                 -- Discord Client ID
                 reaper.ImGui_TextColored(ctx, 0x5865F2FF, "Custom Discord Client ID:")
                 changed, client_id = reaper.ImGui_InputText(ctx, "Client ID", client_id)
@@ -343,8 +368,18 @@ local function Loop()
             reaper.ImGui_SameLine(ctx)
         end
 
-        if reaper.ImGui_Button(ctx, "Close", 120, 0) then
+        -- Action buttons: Apply and Close
+        if reaper.ImGui_Button(ctx, "Apply", 100, 0) then
+            ApplySettings()
+        end
+        reaper.ImGui_SameLine(ctx)
+        if reaper.ImGui_Button(ctx, "Close", 100, 0) then
             open = false
+        end
+
+        if reaper.time_precise() < apply_feedback_timer then
+            reaper.ImGui_SameLine(ctx)
+            reaper.ImGui_TextColored(ctx, 0x57F287FF, "Applied to Discord!")
         end
 
         reaper.ImGui_End(ctx)
