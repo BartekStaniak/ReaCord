@@ -5,6 +5,20 @@
       <metadata>
         <link rel="website">https://github.com/BartekStaniak/ReaCord</link>
       </metadata>
+      <version name="1.0.3" author="Bartek Staniak" time="2026-09-20T13:53:00Z">
+        <changelog><![CDATA[Production Release v1.0.3:
++ Modern ReaImGui settings interface with live Discord profile card preview
++ In-dialog toggle between Classic Win32 dialog and Modern ReaImGui with preference persistence
++ Display version numbers in window headers (Win32 & ReaImGui)
++ Profile Card logo customisation (REAPER classic vs ReaCord hybrid)
++ Throttled status polling and render loop performance optimizations
++ Smooth window resizing with AlwaysAutoResize]]></changelog>
+        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3/reaper_reacord64.dll</source>
+        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3/reaper_reacord.dylib</source>
+        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3/reaper_reacord.dylib</source>
+        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.3/reaper_reacord-x86_64.so</source>
+        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/main/scripts/ReaCord_Settings_ImGui.lua</source>
+      </version>
       <version name="1.0.3-beta13" author="Bartek Staniak" time="2026-09-20T13:45:00Z">
         <changelog><![CDATA[Re-enable AlwaysAutoResize for ReaImGui Settings:
 + Restore AlwaysAutoResize window flag for ReaImGui modern settings interface]]></changelog>
