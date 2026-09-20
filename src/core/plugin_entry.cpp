@@ -3,6 +3,7 @@
 
 #include "config.hpp"
 #include "reaper/reaper_observer.hpp"
+#include "reaper/reaper_csurf.hpp"
 #include "discord/discord_ipc.hpp"
 #include "ui/settings_dialog.hpp"
 
@@ -142,6 +143,7 @@ extern "C" REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(
     if (!rec) {
         // REAPER is shutting down or unloading extension
         if (plugin_register) {
+            plugin_register("-csurf_inst", (void*)&ReaCord::g_csurf_instance);
             plugin_register("-hookcustommenu", (void*)ReaCord::ReaCord_MenuHook);
             plugin_register("-timer", (void*)ReaCord::ReaCord_TimerHook);
             plugin_register("-hookcommand", (void*)ReaCord::ReaCord_HookCommand);
@@ -191,10 +193,13 @@ extern "C" REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(
     // 3. Register ReaScript C API exports
     ReaCord::RegisterApiFunctions(rec);
 
-    // 4. Register Timer Hook for state polling (zero-overhead adaptive callback)
+    // 4. Register Control Surface for instant event-driven transport & track updates
+    rec->Register("csurf_inst", (void*)&ReaCord::g_csurf_instance);
+
+    // 5. Register Timer Hook for passive state polling (zero-overhead adaptive callback)
     rec->Register("timer", (void*)ReaCord::ReaCord_TimerHook);
 
-    // 5. Start asynchronous Discord IPC Client & State Observer
+    // 6. Start asynchronous Discord IPC Client & State Observer
     ReaCord::g_discord_client.Start(ReaCord::Config::Instance().client_id);
     ReaCord::Observer::Instance().Initialize(&ReaCord::g_discord_client);
 
