@@ -110,6 +110,7 @@ void Client::WorkerLoop() {
         }
 
         // 3. Process activity updates
+        int64_t wait_ms = 500;
         if (status_.load() == ConnectionStatus::Connected) {
             Activity act_to_send;
             bool should_send = false;
@@ -121,6 +122,13 @@ void Client::WorkerLoop() {
                     if (rate_limiter_.ShouldSend(act_to_send, force_next_send_)) {
                         should_send = true;
                         force_next_send_ = false;
+                        has_pending_activity_ = false;
+                    } else if (rate_limiter_.HasActivityChanged(act_to_send)) {
+                        // Rate-limited: wait only for the exact remaining cooldown time
+                        wait_ms = std::max<int64_t>(50, rate_limiter_.GetRemainingCooldownMs());
+                    } else {
+                        // Activity is identical to what's already displayed
+                        has_pending_activity_ = false;
                     }
                 }
             }
@@ -139,8 +147,8 @@ void Client::WorkerLoop() {
 
         // 4. Wait on condition variable or timeout
         std::unique_lock<std::mutex> lock(queue_mutex_);
-        cv_.wait_for(lock, std::chrono::milliseconds(500), [this] {
-            return !is_running_.load();
+        cv_.wait_for(lock, std::chrono::milliseconds(wait_ms), [this] {
+            return !is_running_.load() || has_pending_activity_;
         });
     }
 

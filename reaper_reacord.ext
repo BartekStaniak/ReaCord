@@ -1,13 +1,11 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3
+@version 1.0.4-beta1
 @changelog
-  + Modern ReaImGui settings interface with live Discord profile card preview
-  + In-dialog toggle between Classic Win32 dialog and Modern ReaImGui with preference persistence
-  + Display version numbers in window headers (Win32 & ReaImGui)
-  + Profile Card logo customisation (REAPER classic vs ReaCord hybrid)
-  + Throttled status polling and render loop performance optimizations
-  + Smooth window resizing with AlwaysAutoResize
+  + Event-driven IReaperControlSurface (CSurf) for instant zero-latency transport & track updates
+  + Eliminate 1.5s timer polling latency when switching between Play, Pause, Stop, and Record
+  + Instant worker thread wake-up on activity changes via condition variable predicate fix
+  + Reduced rate-limiting cooldown to 1000ms with adaptive sleep scheduling
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

@@ -35,6 +35,8 @@ set(REACORD_SOURCES
     src/core/state_snapshot.hpp
     src/reaper/reaper_observer.cpp
     src/reaper/reaper_observer.hpp
+    src/reaper/reaper_csurf.cpp
+    src/reaper/reaper_csurf.hpp
     src/reaper/api_export.cpp
     src/discord/discord_ipc.cpp
     src/discord/discord_ipc.hpp

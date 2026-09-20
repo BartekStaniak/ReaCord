@@ -16,11 +16,16 @@ public:
     void Initialize(Discord::Client* client);
     void Shutdown();
 
-    // Timer hook called by REAPER's main thread
+    // Timer hook called by REAPER's main thread (passive interval)
     void OnTimerTick();
+
+    // Instant event trigger called by CSurf callbacks (play/pause/stop/rec, track list, tempo)
+    void TriggerInstantUpdate();
 
 private:
     Observer() = default;
+
+    void PollState(bool force);
 
     Discord::Client* discord_client_ = nullptr;
     double last_poll_time_ = 0.0;
