@@ -1,8 +1,13 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.3-beta13
+@version 1.0.3
 @changelog
-  + Re-enable AlwaysAutoResize for ReaImGui modern settings window
+  + Modern ReaImGui settings interface with live Discord profile card preview
+  + In-dialog toggle between Classic Win32 dialog and Modern ReaImGui with preference persistence
+  + Display version numbers in window headers (Win32 & ReaImGui)
+  + Profile Card logo customisation (REAPER classic vs ReaCord hybrid)
+  + Throttled status polling and render loop performance optimizations
+  + Smooth window resizing with AlwaysAutoResize
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib
