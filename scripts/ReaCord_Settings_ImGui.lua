@@ -1,11 +1,11 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.3-beta12
+-- @version 1.0.3-beta13
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
 
-local SCRIPT_VERSION = "1.0.3-beta12"
+local SCRIPT_VERSION = "1.0.3-beta13"
 local ctx
 
 -- Verify ReaImGui availability
@@ -77,7 +77,7 @@ local icon_options = { "REAPER Logo (Classic)", "ReaCord Emblem (Hybrid)" }
 local is_windows = reaper.GetOS():match("Win") ~= nil
 local ver_str = (reaper.ReaCord_GetVersion and reaper.ReaCord_GetVersion() ~= "") and reaper.ReaCord_GetVersion() or SCRIPT_VERSION
 local title = "ReaCord Preferences v" .. ver_str .. "###ReaCord_Preferences"
-local window_flags = reaper.ImGui_WindowFlags_NoCollapse()
+local window_flags = reaper.ImGui_WindowFlags_AlwaysAutoResize()
 
 local function QueryLiveExtState()
     if not reaper.GetProjExtState then return nil end
@@ -198,15 +198,9 @@ local function RenderDiscordPreview()
     reaper.ImGui_PopStyleColor(ctx)
 end
 
-local prev_adv_open = nil
-
 local function Loop()
     UpdateStatusCache(false)
     UpdateExtStateCache(false)
-
-    -- Set comfortable default initial size and constraints
-    reaper.ImGui_SetNextWindowSize(ctx, 420, 530, reaper.ImGui_Cond_FirstUseEver())
-    reaper.ImGui_SetNextWindowSizeConstraints(ctx, 400, 490, 650, 950)
 
     local visible, open = reaper.ImGui_Begin(ctx, title, true, window_flags)
     if visible then
@@ -284,16 +278,6 @@ local function Loop()
             reaper.ImGui_SetNextItemOpen(ctx, true, reaper.ImGui_Cond_Appearing())
         end
         local adv_open = reaper.ImGui_CollapsingHeader(ctx, "Advanced Settings (Client ID & Custom Timers)")
-
-        -- Auto-expand/shrink window when Advanced Settings is toggled, avoiding per-frame layout recalculation
-        if prev_adv_open == nil then
-            prev_adv_open = adv_open
-        elseif adv_open ~= prev_adv_open then
-            local cur_w, cur_h = reaper.ImGui_GetWindowSize(ctx)
-            local delta = adv_open and 215 or -215
-            reaper.ImGui_SetNextWindowSize(ctx, cur_w, math.max(510, cur_h + delta), reaper.ImGui_Cond_Always())
-            prev_adv_open = adv_open
-        end
 
         if adv_open then
             reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_ChildBg(), 0x232428FF)
