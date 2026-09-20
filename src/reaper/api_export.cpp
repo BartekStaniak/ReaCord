@@ -1,6 +1,7 @@
 #include "core/config.hpp"
 #include "discord/discord_ipc.hpp"
 #include "reaper/reaper_api.h"
+#include "reaper_observer.hpp"
 #include "ui/settings_dialog.hpp"
 #include <cstdlib>
 #include <cstring>
@@ -77,6 +78,7 @@ bool API_ReaCord_SetConfig(const char* key, const char* val) {
     else return false;
 
     cfg.Save();
+    Observer::Instance().TriggerInstantUpdate();
     return true;
 }
 
@@ -85,6 +87,7 @@ bool API_ReaCord_ToggleIncognito() {
     Config& cfg = Config::Instance();
     cfg.incognito = !cfg.incognito;
     cfg.Save();
+    Observer::Instance().TriggerInstantUpdate();
     return cfg.incognito;
 }
 
@@ -94,32 +97,80 @@ bool API_ReaCord_SwitchToClassicUI() {
     return true;
 }
 
+// ReaScript API: ReaCord_TriggerUpdate
+bool API_ReaCord_TriggerUpdate() {
+    Observer::Instance().TriggerInstantUpdate();
+    return true;
+}
+
+// ReaScript vararg unpacking wrappers: (void* (*)(void** arglist, int numparms))
+static void* APIvararg_ReaCord_GetVersion(void** /*arglist*/, int /*numparms*/) {
+    return (void*)API_ReaCord_GetVersion();
+}
+
+static void* APIvararg_ReaCord_GetStatus(void** /*arglist*/, int /*numparms*/) {
+    return (void*)API_ReaCord_GetStatus();
+}
+
+static void* APIvararg_ReaCord_GetConfig(void** arglist, int numparms) {
+    if (!arglist || numparms < 1) return (void*)"";
+    const char* key = static_cast<const char*>(arglist[0]);
+    return (void*)API_ReaCord_GetConfig(key);
+}
+
+static void* APIvararg_ReaCord_SetConfig(void** arglist, int numparms) {
+    if (!arglist || numparms < 2) return (void*)(INT_PTR)0;
+    const char* key = static_cast<const char*>(arglist[0]);
+    const char* val = static_cast<const char*>(arglist[1]);
+    bool res = API_ReaCord_SetConfig(key, val);
+    return (void*)(INT_PTR)(res ? 1 : 0);
+}
+
+static void* APIvararg_ReaCord_ToggleIncognito(void** /*arglist*/, int /*numparms*/) {
+    bool res = API_ReaCord_ToggleIncognito();
+    return (void*)(INT_PTR)(res ? 1 : 0);
+}
+
+static void* APIvararg_ReaCord_SwitchToClassicUI(void** /*arglist*/, int /*numparms*/) {
+    bool res = API_ReaCord_SwitchToClassicUI();
+    return (void*)(INT_PTR)(res ? 1 : 0);
+}
+
+static void* APIvararg_ReaCord_TriggerUpdate(void** /*arglist*/, int /*numparms*/) {
+    bool res = API_ReaCord_TriggerUpdate();
+    return (void*)(INT_PTR)(res ? 1 : 0);
+}
+
 void RegisterApiFunctions(reaper_plugin_info_t* rec) {
     if (!rec || !rec->Register) return;
 
     rec->Register("API_ReaCord_GetVersion", (void*)API_ReaCord_GetVersion);
-    rec->Register("APIvararg_ReaCord_GetVersion", (void*)API_ReaCord_GetVersion);
+    rec->Register("APIvararg_ReaCord_GetVersion", (void*)APIvararg_ReaCord_GetVersion);
     rec->Register("APIdef_ReaCord_GetVersion", (void*)"const char*\0\0\0Returns ReaCord version string");
 
     rec->Register("API_ReaCord_GetStatus", (void*)API_ReaCord_GetStatus);
-    rec->Register("APIvararg_ReaCord_GetStatus", (void*)API_ReaCord_GetStatus);
+    rec->Register("APIvararg_ReaCord_GetStatus", (void*)APIvararg_ReaCord_GetStatus);
     rec->Register("APIdef_ReaCord_GetStatus", (void*)"const char*\0\0\0Returns ReaCord Discord connection status (Connected, Connecting, Disconnected)");
 
     rec->Register("API_ReaCord_GetConfig", (void*)API_ReaCord_GetConfig);
-    rec->Register("APIvararg_ReaCord_GetConfig", (void*)API_ReaCord_GetConfig);
+    rec->Register("APIvararg_ReaCord_GetConfig", (void*)APIvararg_ReaCord_GetConfig);
     rec->Register("APIdef_ReaCord_GetConfig", (void*)"const char*\0const char*\0key\0Gets a ReaCord configuration value");
 
     rec->Register("API_ReaCord_SetConfig", (void*)API_ReaCord_SetConfig);
-    rec->Register("APIvararg_ReaCord_SetConfig", (void*)API_ReaCord_SetConfig);
+    rec->Register("APIvararg_ReaCord_SetConfig", (void*)APIvararg_ReaCord_SetConfig);
     rec->Register("APIdef_ReaCord_SetConfig", (void*)"bool\0const char*,const char*\0key,val\0Sets a ReaCord configuration value");
 
     rec->Register("API_ReaCord_ToggleIncognito", (void*)API_ReaCord_ToggleIncognito);
-    rec->Register("APIvararg_ReaCord_ToggleIncognito", (void*)API_ReaCord_ToggleIncognito);
+    rec->Register("APIvararg_ReaCord_ToggleIncognito", (void*)APIvararg_ReaCord_ToggleIncognito);
     rec->Register("APIdef_ReaCord_ToggleIncognito", (void*)"bool\0\0\0Toggles ReaCord incognito privacy mode");
 
     rec->Register("API_ReaCord_SwitchToClassicUI", (void*)API_ReaCord_SwitchToClassicUI);
-    rec->Register("APIvararg_ReaCord_SwitchToClassicUI", (void*)API_ReaCord_SwitchToClassicUI);
+    rec->Register("APIvararg_ReaCord_SwitchToClassicUI", (void*)APIvararg_ReaCord_SwitchToClassicUI);
     rec->Register("APIdef_ReaCord_SwitchToClassicUI", (void*)"bool\0\0\0Requests REAPER to open the classic native ReaCord settings dialog on the next main loop tick");
+
+    rec->Register("API_ReaCord_TriggerUpdate", (void*)API_ReaCord_TriggerUpdate);
+    rec->Register("APIvararg_ReaCord_TriggerUpdate", (void*)APIvararg_ReaCord_TriggerUpdate);
+    rec->Register("APIdef_ReaCord_TriggerUpdate", (void*)"bool\0\0\0Triggers an immediate Discord Rich Presence update");
 }
 
 } // namespace ReaCord
