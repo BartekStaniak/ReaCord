@@ -1,12 +1,11 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.4-beta2
+@version 1.0.4-beta3
 @changelog
-  + Fix ReaScript APIvararg wrappers so settings changes immediately persist in C++ core
-  + Add Apply button in ReaImGui modern settings with instant visual feedback
-  + Add ReaCord_TriggerUpdate API for immediate presence synchronization
-  + Stabilize ExtState timer anchoring to prevent clock jitter and rate limit spam
-  + Add UI clarification note for Project Elapsed Time
+  + Prevent horizontal window resize snapping when clicking Apply in modern ReaImGui UI
+  + Transform Apply button into self-contained green visual feedback badge on click
+  + Ensure instant ExtState config reload and CSurf presence dispatch upon Apply
+  + Auto-commit and persist any modified settings on window close
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

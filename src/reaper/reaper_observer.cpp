@@ -97,6 +97,7 @@ void Observer::OnTimerTick() {
 }
 
 void Observer::TriggerInstantUpdate() {
+    Config::Instance().Load();
     PollState(true);
 }
 
@@ -110,6 +111,13 @@ void Observer::PollState(bool force) {
         return;
     }
     last_poll_time_ = now;
+
+    if (force) {
+        Config::Instance().Load();
+        if (discord_client_) {
+            discord_client_->SetClientId(Config::Instance().client_id);
+        }
+    }
 
     const Config& cfg = Config::Instance();
 
