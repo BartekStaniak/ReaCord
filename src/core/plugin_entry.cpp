@@ -104,6 +104,10 @@ static void ReaCord_MenuHook(const char* menuidstr, void* menu, int /*flag*/) {
     if (!menuidstr || strcmp(menuidstr, "Main extensions") != 0) return;
     if (!menu || !g_cmd_settings) return;
 
+#ifndef _WIN32
+    if (!GetMenuItemCount || !GetMenuItemID || !InsertMenuItem) return;
+#endif
+
     HMENU hMenu = static_cast<HMENU>(menu);
     int count = GetMenuItemCount(hMenu);
     for (int i = 0; i < count; ++i) {
@@ -113,14 +117,16 @@ static void ReaCord_MenuHook(const char* menuidstr, void* menu, int /*flag*/) {
     }
 
 #ifdef _WIN32
-    MENUITEMINFOA mi = { sizeof(MENUITEMINFOA) };
+    MENUITEMINFOA mi{};
+    mi.cbSize = sizeof(MENUITEMINFOA);
     mi.fMask = MIIM_TYPE | MIIM_ID;
     mi.fType = MFT_STRING;
     mi.wID = static_cast<UINT>(g_cmd_settings);
     mi.dwTypeData = const_cast<char*>("ReaCord Settings...");
     InsertMenuItemA(hMenu, count, TRUE, &mi);
 #else
-    MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
+    MENUITEMINFO mi{};
+    mi.cbSize = sizeof(MENUITEMINFO);
     mi.fMask = MIIM_TYPE | MIIM_ID;
     mi.fType = MFT_STRING;
     mi.wID = static_cast<UINT>(g_cmd_settings);
