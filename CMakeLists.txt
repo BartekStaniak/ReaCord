@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
-project(ReaCord VERSION 1.0.3 LANGUAGES C CXX)
+project(ReaCord VERSION 1.0.4 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(APPLE)
+    enable_language(OBJCXX)
+endif()
 
 # Determine output binary name following REAPER convention
 if(WIN32)
@@ -50,6 +54,15 @@ if(WIN32)
     list(APPEND REACORD_SOURCES
         src/ui/reacord.rc
     )
+elseif(APPLE)
+    list(APPEND REACORD_SOURCES
+        deps/wdl/WDL/swell/swell-modstub.mm
+    )
+    set_source_files_properties(deps/wdl/WDL/swell/swell-modstub.mm PROPERTIES LANGUAGE OBJCXX)
+else()
+    list(APPEND REACORD_SOURCES
+        deps/wdl/WDL/swell/swell-modstub-generic.cpp
+    )
 endif()
 
 # Create shared library extension
@@ -68,13 +81,19 @@ target_include_directories(reaper_reacord PRIVATE
     src/ui
     deps/reaper-sdk/sdk
     deps/wdl/WDL
+    deps/wdl/WDL/swell
 )
 
 # Compiler definitions
 target_compile_definitions(reaper_reacord PRIVATE
-    REACORD_VERSION="1.0.1"
     REACORD_CLIENT_ID_DEFAULT="1462972195658534965"
 )
+
+if(NOT WIN32)
+    target_compile_definitions(reaper_reacord PRIVATE
+        SWELL_PROVIDED_BY_APP
+    )
+endif()
 
 if(WIN32)
     target_compile_definitions(reaper_reacord PRIVATE
@@ -115,6 +134,9 @@ elseif(APPLE)
         -Wall
         -Wno-unused-parameter
         -O3
+    )
+    target_link_libraries(reaper_reacord PRIVATE
+        "-framework Cocoa"
     )
     set_target_properties(reaper_reacord PROPERTIES
         SUFFIX ".dylib"
