@@ -1,11 +1,11 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.4-beta3
+@version 1.0.4-beta4
 @changelog
-  + Prevent horizontal window resize snapping when clicking Apply in modern ReaImGui UI
-  + Transform Apply button into self-contained green visual feedback badge on click
-  + Ensure instant ExtState config reload and CSurf presence dispatch upon Apply
-  + Auto-commit and persist any modified settings on window close
+  + Fix macOS REAPER extension loading by relaxing strict API loader check
+  + Add ad-hoc codesigning step for macOS dylib binaries in build pipeline
+  + Fix horizontal clipping of Default ID button in modern ReaImGui settings
+  + Balance bottom action buttons (Apply & Close) on macOS and Linux
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

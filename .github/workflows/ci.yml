@@ -36,6 +36,11 @@ jobs:
       - name: Build ReaCord
         run: cmake --build build --config Release --verbose
 
+      - name: Codesign Binary (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          codesign --force --deep -s - build/reaper_reacord.dylib
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:

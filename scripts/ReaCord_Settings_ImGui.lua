@@ -1,11 +1,11 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.4-beta3
+-- @version 1.0.4-beta4
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
 
-local SCRIPT_VERSION = "1.0.4-beta3"
+local SCRIPT_VERSION = "1.0.4-beta4"
 local ctx
 
 -- Verify ReaImGui availability
@@ -309,11 +309,12 @@ local function Loop()
             if reaper.ImGui_BeginChild(ctx, "AdvancedSettingsBox", 0, 205, reaper.ImGui_ChildFlags_Borders()) then
                 -- Discord Client ID
                 reaper.ImGui_TextColored(ctx, 0x5865F2FF, "Custom Discord Client ID:")
-                changed, client_id = reaper.ImGui_InputText(ctx, "Client ID", client_id)
+                reaper.ImGui_SetNextItemWidth(ctx, 270)
+                changed, client_id = reaper.ImGui_InputText(ctx, "##ClientID", client_id)
                 if changed then SetConfig("client_id", client_id) end
 
                 reaper.ImGui_SameLine(ctx)
-                if reaper.ImGui_Button(ctx, "Default ID") then
+                if reaper.ImGui_Button(ctx, "Default ID", 100, 0) then
                     client_id = DEFAULT_CLIENT_ID
                     SetConfig("client_id", client_id)
                 end
@@ -331,9 +332,11 @@ local function Loop()
                 changed, extstate_text = reaper.ImGui_Checkbox(ctx, 'Append active time to playback state text', extstate_text)
                 if changed then SetConfig("extstate_in_state_text", extstate_text and "1" or "0") end
 
+                reaper.ImGui_SetNextItemWidth(ctx, 200)
                 changed, extstate_sec = reaper.ImGui_InputText(ctx, "Section", extstate_sec)
                 if changed then SetConfig("extstate_section", extstate_sec) end
 
+                reaper.ImGui_SetNextItemWidth(ctx, 200)
                 changed, extstate_key = reaper.ImGui_InputText(ctx, "Key", extstate_key)
                 if changed then SetConfig("extstate_key", extstate_key) end
 
@@ -369,6 +372,7 @@ local function Loop()
         end
 
         -- Action buttons: Apply and Close
+        local btn_w = is_windows and 100 or 206
         local is_applied = (reaper.time_precise() < apply_feedback_timer)
         if is_applied then
             reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_Button(), 0x23A55AFF)
@@ -377,7 +381,7 @@ local function Loop()
             reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_Text(), 0xFFFFFFFF)
         end
 
-        if reaper.ImGui_Button(ctx, is_applied and "Applied!" or "Apply", 100, 0) then
+        if reaper.ImGui_Button(ctx, is_applied and "Applied!" or "Apply", btn_w, 0) then
             ApplySettings()
         end
 
@@ -386,7 +390,7 @@ local function Loop()
         end
 
         reaper.ImGui_SameLine(ctx)
-        if reaper.ImGui_Button(ctx, "Close", 100, 0) then
+        if reaper.ImGui_Button(ctx, "Close", btn_w, 0) then
             ApplySettings()
             open = false
         end
