@@ -158,7 +158,8 @@ extern "C" REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(
     }
 
     // Load function pointers from REAPER
-    if (REAPERAPI_LoadAPI(rec->GetFunc) != 0) {
+    REAPERAPI_LoadAPI(rec->GetFunc);
+    if (!plugin_register) {
         return 0;
     }
 

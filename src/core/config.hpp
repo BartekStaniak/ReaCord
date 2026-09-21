@@ -2,7 +2,7 @@
 
 #include <string>
 
-#define REACORD_VERSION "1.0.4-beta3"
+#define REACORD_VERSION "1.0.4-beta4"
 
 namespace ReaCord {
 
