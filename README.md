@@ -23,15 +23,16 @@ Because audio performance comes first, all presence updates run on a detached wo
 ## Features
 
 - **Self-contained**: Native extension (`.dll` on Windows, `.dylib` on macOS, `.so` on Linux). No secondary helper apps, terminal windows, or interpreters to install.
-- **Audio-safe**: Presence updates run asynchronously on a low-priority background thread at ~0.6 Hz. The DSP/audio thread is never blocked.
+- **Event-driven & audio-safe**: Transport changes (Play, Pause, Stop, Record) and track adjustments update your Discord presence instantly via REAPER's control surface architecture (`IReaperControlSurface`). Idle polling is throttled to at most once every 1.5 seconds, and all IPC communication runs asynchronously on a detached background worker thread so your DSP/audio engine is never touched.
 - **Low footprint**: Uses under 2 MB of memory and less than 0.01% CPU. Updates are hashed so packets are only sent when project state actually changes.
 - **Privacy controls**: Customize what your Discord profile shows:
   - Project name: full filename, project name only, generic placeholder (*"Working on a Project"*), or hidden entirely.
-  - Session timer: project playback time, total REAPER uptime, or off.
-  - Playback status: show playback with tempo (*"Playing @ 128 BPM"*), simple state (*"Recording"*), or hidden.
+  - Session timer: project elapsed time, total REAPER uptime, custom project active work time (read directly from project `ExtState` if you use session timer scripts), or off.
+  - Playback status: show playback with tempo (*"Playing @ 128 BPM"*), simple state (*"Recording"*), or hidden. You can also append your active project work time straight into your status text.
+  - Profile logo: choose between the classic REAPER guitar pick or the ReaCord hybrid emblem.
   - Track count: toggle on or off.
-  - One-click Incognito: an instant stealth action that hides all project details and track counts.
-- **Two configuration UIs**: A native REAPER settings window (built with SWELL) and an optional ReaImGui script with a live Discord preview card.
+  - One-click Incognito: an instant stealth toggle that hides your project name and tracks (*"Working in REAPER / Incognito"*).
+- **Two configuration UIs**: Choose between a native REAPER settings dialog (built with SWELL) or a modern hardware-accelerated ReaImGui interface featuring a live Discord profile card preview, an instant Apply button, and one-click switching between UIs.
 - **ReaPack support**: Install once and get automatic updates directly through REAPER's package manager.
 
 ---
@@ -73,18 +74,37 @@ ReaCord provides multiple ways to configure your presence:
 Open REAPER's top menu bar and select:  
 **Extensions > ReaCord Settings...**
 
+By default, this opens ReaCord's settings dialog. If you have **ReaImGui** installed, you can toggle the checkbox at the bottom to make the modern interface your default instead. Both interfaces feature a button to instantly switch back and forth whenever you want.
+
 ### 2. Action List & Shortcuts
 Press `?` to open REAPER's **Action List**, search for `ReaCord: Open Settings...`, and click **Run**. You can bind this action to any shortcut key or toolbar button.
 
 ReaCord also provides a toggle action for stealth mode:
 - `ReaCord: Toggle Incognito Mode`
 
-### 3. ReaImGui Companion Script (Optional)
-If you have **ReaImGui** installed, you can launch the companion script from the Action List:
-```text
-scripts/ReaCord_Settings_ImGui.lua
+### 3. ReaImGui Interface
+The modern ReaImGui interface (`scripts/ReaCord_Settings_ImGui.lua`) can also be run directly from the Action List. It gives you a floating, dark-mode window with live IPC connection telemetry, an interactive Discord card preview, an instant Apply button, and advanced controls for custom client IDs and ExtState project timers.
+
+---
+
+## Scripting & ReaScript API
+
+For scripters and custom toolbar enthusiasts, ReaCord registers official ReaScript C API functions into REAPER (available in Lua, EEL2, and Python):
+
+```lua
+-- Query Discord IPC connection status ("Connected", "Connecting...", "Disconnected")
+local status = reaper.ReaCord_GetStatus()
+
+-- Toggle Incognito mode directly from custom scripts or toolbar buttons
+reaper.ReaCord_ToggleIncognito()
+
+-- Trigger an immediate presence synchronization
+reaper.ReaCord_TriggerUpdate()
+
+-- Query or modify configuration settings programmatically
+local current_mode = reaper.ReaCord_GetConfig("project_name_mode")
+reaper.ReaCord_SetConfig("incognito", "1")
 ```
-This opens a floating window with live socket connection telemetry and a real-time preview of how your card looks in Discord.
 
 ---
 
@@ -109,15 +129,17 @@ For full setup instructions, see [docs/DISCORD_APP_SETUP.md](docs/DISCORD_APP_SE
 ```
 [ REAPER Realtime Audio Engine ] ---> [ UNTOUCHED / ZERO OVERHEAD ]
                |
-[ REAPER Main Thread ] (Timer hook @ 0.6 Hz)
-               |  (Sanitizes state & applies privacy options)
-        [ Lock-Free Snapshot ]
-               |  (Double-buffered exchange)
-[ ReaCord Worker Thread ] (Asynchronous Event Loop)
-               |  (Non-blocking rate-limiting & dirty hash check)
-[ Local IPC Pipe / Domain Socket ]
-               |
-[ Discord Desktop Client ]
+[ CSurf Event Callbacks ] ------------+-> [ Double-Buffered Activity State ]
+(Play, Stop, Record, Track Title)     |                |
+                                      |                v
+[ Main Thread Timer Hook ] -----------+     [ Worker Thread (cv wake-up) ]
+(Throttled idle polling @ 1.5s)                        |
+                                                       v
+                                            [ Non-blocking Rate Limiter ]
+                                                       |
+                                            [ Local IPC Pipe / Domain Socket ]
+                                                       |
+                                            [ Discord Desktop Client ]
 ```
 
 ---
