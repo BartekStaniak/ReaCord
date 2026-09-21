@@ -5,6 +5,19 @@
       <metadata>
         <link rel="website">https://github.com/BartekStaniak/ReaCord</link>
       </metadata>
+      <version name="1.0.4-beta5" author="Bartek Staniak" time="2026-09-21T18:45:00Z">
+        <changelog><![CDATA[macOS Dynamic Linker SWELL Resolution & UI Fixes:
++ Fix macOS and Linux extension loading by compiling and linking SWELL modstub
++ Eliminate undefined Win32 menu symbols (InsertMenuItem, GetMenuItemCount, GetMenuItemID)
++ Query host SWELL API via SWELL_PROVIDED_BY_APP for Extensions menu hook
++ Add safety null checks for SWELL menu callbacks in headless/minimal environments
++ Fix Default ID button clipping and balance action buttons in modern ReaImGui UI]]></changelog>
+        <source platform="win64" file="reaper_reacord64.dll">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.4-beta5/reaper_reacord64.dll</source>
+        <source platform="darwin64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.4-beta5/reaper_reacord.dylib</source>
+        <source platform="darwin-arm64" file="reaper_reacord.dylib">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.4-beta5/reaper_reacord.dylib</source>
+        <source platform="linux64" file="reaper_reacord-x86_64.so">https://github.com/BartekStaniak/ReaCord/releases/download/v1.0.4-beta5/reaper_reacord-x86_64.so</source>
+        <source file="scripts/ReaCord_Settings_ImGui.lua" type="script" main="main,gui">https://raw.githubusercontent.com/BartekStaniak/ReaCord/develop/scripts/ReaCord_Settings_ImGui.lua</source>
+      </version>
       <version name="1.0.4-beta4" author="Bartek Staniak" time="2026-09-21T18:15:00Z">
         <changelog><![CDATA[macOS Extension Loading & UI Polish:
 + Fix macOS REAPER extension loading by relaxing strict API loader check
