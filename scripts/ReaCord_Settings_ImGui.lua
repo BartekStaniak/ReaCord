@@ -1,11 +1,11 @@
 -- @description ReaCord Settings (ReaImGui Modern Interface)
 -- @author Bartek Staniak
--- @version 1.0.4-beta5
+-- @version 1.0.4
 -- @about
 --   Modern hardware-accelerated GUI for ReaCord with live Discord profile card preview.
 --   Provides real-time configuration of privacy opt-ins and presence attributes.
 
-local SCRIPT_VERSION = "1.0.4-beta5"
+local SCRIPT_VERSION = "1.0.4"
 local ctx
 
 -- Verify ReaImGui availability
