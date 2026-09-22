@@ -1,11 +1,15 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.4-beta5
+@version 1.0.4
 @changelog
-  + Fix macOS and Linux extension loading by linking SWELL modstub (resolves undefined Win32 menu symbols)
-  + Query host SWELL API via SWELL_PROVIDED_BY_APP for Extensions menu hook
-  + Add safety null checks for SWELL menu callbacks in headless/minimal environments
-  + Fix Default ID button clipping and balance action buttons in modern ReaImGui UI
+  + Production Release v1.0.4
+  + Event-driven transport updates via IReaperControlSurface (zero-latency Play/Pause/Stop/Record)
+  + Universal macOS binary (Apple Silicon & Intel) with SWELL modstub linkage and ad-hoc codesigning
+  + Linux 64-bit support with SWELL dynamic host API resolution
+  + Extensions menu hook across all platforms (Win32 & SWELL)
+  + Modern ReaImGui settings interface with live Discord profile card preview and instant Apply badge
+  + Fixed Default ID button horizontal clipping and balanced cross-platform action buttons
+  + Granular privacy controls: project name masking, project timers (ExtState/uptime), and Incognito mode
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

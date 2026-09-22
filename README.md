@@ -32,7 +32,7 @@ Because audio performance comes first, all presence updates run on a detached wo
   - Profile logo: choose between the classic REAPER guitar pick or the ReaCord hybrid emblem.
   - Track count: toggle on or off.
   - One-click Incognito: an instant stealth toggle that hides your project name and tracks (*"Working in REAPER / Incognito"*).
-- **Two configuration UIs**: Choose between a native REAPER settings dialog (built with SWELL) or a modern hardware-accelerated ReaImGui interface featuring a live Discord profile card preview, an instant Apply button, and one-click switching between UIs.
+- **Intuitive configuration**: Comes with a sleek, hardware-accelerated ReaImGui interface featuring a live Discord profile card preview, instant Apply button, and real-time status diagnostics. On Windows, a classic lightweight Win32 settings dialog is also included, with seamless one-click switching between both.
 - **ReaPack support**: Install once and get automatic updates directly through REAPER's package manager.
 
 ---
@@ -51,13 +51,15 @@ Because audio performance comes first, all presence updates run on a detached wo
 5. Search for `ReaCord`, right-click and select **Install**.
 6. Click **Apply** in the bottom-right corner and restart REAPER.
 
+> **Tip:** To use the modern interface with the live Discord profile card preview, make sure you also have **ReaImGui** installed via ReaPack (it's readily available in the default ReaTeam repository).
+
 ---
 
 ### Method 2: Manual Installation
 
 1. Download the pre-compiled binary for your operating system from [Releases](https://github.com/BartekStaniak/ReaCord/releases):
    - **Windows (x64)**: `reaper_reacord64.dll`
-   - **macOS (Universal - Apple Silicon & Intel)**: `reaper_reacord.dylib`
+   - **macOS (Universal - Apple Silicon & Intel)**: `reaper_reacord.dylib` *(ad-hoc codesigned)*
    - **Linux (x86_64)**: `reaper_reacord-x86_64.so`
 2. In REAPER, go to **Options > Show REAPER resource path in explorer/finder**.
 3. Open the `UserPlugins` folder (create it if it doesn't exist).
@@ -68,19 +70,21 @@ Because audio performance comes first, all presence updates run on a detached wo
 
 ## Configuration
 
-ReaCord provides multiple ways to configure your presence:
+ReaCord provides multiple convenient ways to configure your presence:
 
 ### 1. Extensions Menu
 Open REAPER's top menu bar and select:  
 **Extensions > ReaCord Settings...**
 
-By default, this opens ReaCord's settings dialog. If you have **ReaImGui** installed, you can toggle the checkbox at the bottom to make the modern interface your default instead. Both interfaces feature a button to instantly switch back and forth whenever you want.
+- **Windows**: Opens the classic settings dialog by default, with a checkbox to make the modern ReaImGui interface your default instead. You can switch between both interfaces at any time with a single click.
+- **macOS & Linux**: Automatically launches the modern ReaImGui interface (with a helpful info fallback if ReaImGui is not yet installed).
 
 ### 2. Action List & Shortcuts
-Press `?` to open REAPER's **Action List**, search for `ReaCord: Open Settings...`, and click **Run**. You can bind this action to any shortcut key or toolbar button.
-
-ReaCord also provides a toggle action for stealth mode:
-- `ReaCord: Toggle Incognito Mode`
+Press `?` to open REAPER's **Action List**. ReaCord registers dedicated actions you can run directly or bind to keyboard shortcuts and toolbar buttons:
+- `ReaCord: Open Settings...` *(opens your preferred interface)*
+- `ReaCord: Open Modern Settings (ReaImGui)`
+- `ReaCord: Open Classic Win32 Settings` *(Windows)*
+- `ReaCord: Toggle Incognito Mode` *(instant stealth toggle)*
 
 ### 3. ReaImGui Interface
 The modern ReaImGui interface (`scripts/ReaCord_Settings_ImGui.lua`) can also be run directly from the Action List. It gives you a floating, dark-mode window with live IPC connection telemetry, an interactive Discord card preview, an instant Apply button, and advanced controls for custom client IDs and ExtState project timers.
