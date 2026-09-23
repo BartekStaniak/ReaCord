@@ -174,3 +174,26 @@ if(WIN32 AND DEFINED ENV{APPDATA})
         install(TARGETS reaper_reacord DESTINATION "${REAPER_USERPLUGINS}")
     endif()
 endif()
+
+# ==============================================================================
+# Testing
+# ==============================================================================
+enable_testing()
+
+add_executable(test_linux_ipc
+    tests/test_linux_ipc.cpp
+    src/discord/discord_ipc.cpp
+)
+target_include_directories(test_linux_ipc PRIVATE
+    src/discord
+    src/core
+)
+if(WIN32)
+    target_link_libraries(test_linux_ipc PRIVATE ws2_32 advapi32)
+elseif(APPLE)
+    target_link_libraries(test_linux_ipc PRIVATE pthread)
+else()
+    target_link_libraries(test_linux_ipc PRIVATE pthread dl)
+endif()
+
+add_test(NAME test_linux_ipc COMMAND test_linux_ipc)
