@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(ReaCord VERSION 1.0.4 LANGUAGES C CXX)
+project(ReaCord VERSION 1.0.5 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -174,3 +174,26 @@ if(WIN32 AND DEFINED ENV{APPDATA})
         install(TARGETS reaper_reacord DESTINATION "${REAPER_USERPLUGINS}")
     endif()
 endif()
+
+# ==============================================================================
+# Testing
+# ==============================================================================
+enable_testing()
+
+add_executable(test_linux_ipc
+    tests/test_linux_ipc.cpp
+    src/discord/discord_ipc.cpp
+)
+target_include_directories(test_linux_ipc PRIVATE
+    src/discord
+    src/core
+)
+if(WIN32)
+    target_link_libraries(test_linux_ipc PRIVATE ws2_32 advapi32)
+elseif(APPLE)
+    target_link_libraries(test_linux_ipc PRIVATE pthread)
+else()
+    target_link_libraries(test_linux_ipc PRIVATE pthread dl)
+endif()
+
+add_test(NAME test_linux_ipc COMMAND test_linux_ipc)

@@ -7,10 +7,15 @@
 #include <windows.h>
 #else
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <algorithm>
+#include <vector>
 #endif
 
 namespace ReaCord {
@@ -264,16 +269,90 @@ void Client::ReadIncoming() {
 
 #else // macOS and Linux (POSIX)
 
-static const char* GetSocketDirectory() {
-    const char* dir = getenv("XDG_RUNTIME_DIR");
-    if (dir && dir[0]) return dir;
-    dir = getenv("TMPDIR");
-    if (dir && dir[0]) return dir;
-    dir = getenv("TMP");
-    if (dir && dir[0]) return dir;
-    dir = getenv("TEMP");
-    if (dir && dir[0]) return dir;
-    return "/tmp";
+static void AddDirectoryIfExists(std::vector<std::string>& dirs, const std::string& path) {
+    if (path.empty()) return;
+    if (std::find(dirs.begin(), dirs.end(), path) != dirs.end()) return;
+
+    struct stat st;
+    if (stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
+        dirs.push_back(path);
+    }
+}
+
+static std::vector<std::string> GetSocketDirectories() {
+    std::vector<std::string> dirs;
+
+    // 1. Explicit DISCORD_IPC_PATH directory override if provided
+    const char* custom_path = getenv("DISCORD_IPC_PATH");
+    if (custom_path && custom_path[0]) {
+        struct stat st;
+        if (stat(custom_path, &st) == 0 && S_ISDIR(st.st_mode)) {
+            AddDirectoryIfExists(dirs, custom_path);
+        }
+    }
+
+    // 2. Runtime directories (XDG_RUNTIME_DIR or /run/user/<uid>)
+    std::vector<std::string> runtime_bases;
+    const char* xdg = getenv("XDG_RUNTIME_DIR");
+    if (xdg && xdg[0]) {
+        runtime_bases.push_back(xdg);
+    }
+    std::string uid_run = "/run/user/" + std::to_string(getuid());
+    if (std::find(runtime_bases.begin(), runtime_bases.end(), uid_run) == runtime_bases.end()) {
+        runtime_bases.push_back(uid_run);
+    }
+
+    for (const auto& base : runtime_bases) {
+        // Standard native path (e.g. /run/user/1000)
+        AddDirectoryIfExists(dirs, base);
+
+        // Flatpak common paths under $XDG_RUNTIME_DIR/app/
+        std::string app_dir = base + "/app";
+        static const char* const known_flatpaks[] = {
+            "com.discordapp.Discord",
+            "com.discordapp.DiscordCanary",
+            "com.discordapp.DiscordPTB",
+            "com.discordapp.DiscordDevelopment",
+            "dev.vencord.Vesktop",
+            "xyz.armcord.ArmCord",
+            "io.github.spacingbat3.webcord",
+            "io.github.legcord.Legcord"
+        };
+        for (const char* app_id : known_flatpaks) {
+            AddDirectoryIfExists(dirs, app_dir + "/" + app_id);
+        }
+
+        // Dynamically discover any other Flatpak subdirectories under base/app/
+        DIR* dp = opendir(app_dir.c_str());
+        if (dp) {
+            struct dirent* entry;
+            while ((entry = readdir(dp)) != nullptr) {
+                if (entry->d_name[0] == '.') continue;
+                std::string sub = app_dir + "/" + entry->d_name;
+                AddDirectoryIfExists(dirs, sub);
+            }
+            closedir(dp);
+        }
+
+        // Snap Discord paths
+        AddDirectoryIfExists(dirs, base + "/snap.discord");
+        AddDirectoryIfExists(dirs, base + "/snap.discord-canary");
+    }
+
+    // 3. Fallback temp directories (macOS uses $TMPDIR, Linux fallback /tmp)
+    const char* tmpdir = getenv("TMPDIR");
+    if (tmpdir && tmpdir[0]) AddDirectoryIfExists(dirs, tmpdir);
+
+    const char* tmp = getenv("TMP");
+    if (tmp && tmp[0]) AddDirectoryIfExists(dirs, tmp);
+
+    const char* temp = getenv("TEMP");
+    if (temp && temp[0]) AddDirectoryIfExists(dirs, temp);
+
+    AddDirectoryIfExists(dirs, "/tmp");
+    AddDirectoryIfExists(dirs, "/tmp/app/com.discordapp.Discord");
+
+    return dirs;
 }
 
 bool Client::TryConnect() {
@@ -281,25 +360,27 @@ bool Client::TryConnect() {
 
     if (client_id_.empty()) return false;
 
-    const char* base_dir = GetSocketDirectory();
+    auto attempt_connect = [this](const std::string& sock_path) -> bool {
+        struct sockaddr_un addr;
+        if (sock_path.length() >= sizeof(addr.sun_path)) {
+            return false;
+        }
 
-    for (int i = 0; i < 10; ++i) {
-        std::string sock_path = std::string(base_dir) + "/discord-ipc-" + std::to_string(i);
+        // Fast stat check: verify path exists and is a Unix domain socket
+        struct stat st;
+        if (stat(sock_path.c_str(), &st) != 0 || !S_ISSOCK(st.st_mode)) {
+            return false;
+        }
 
         int fd = socket(AF_UNIX, SOCK_STREAM, 0);
-        if (fd < 0) continue;
+        if (fd < 0) return false;
 
         // Set non-blocking
         int flags = fcntl(fd, F_GETFL, 0);
         fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 
-        struct sockaddr_un addr;
         memset(&addr, 0, sizeof(addr));
         addr.sun_family = AF_UNIX;
-        if (sock_path.length() >= sizeof(addr.sun_path)) {
-            close(fd);
-            continue;
-        }
         strncpy(addr.sun_path, sock_path.c_str(), sizeof(addr.sun_path) - 1);
 
         int res = connect(fd, (struct sockaddr*)&addr, sizeof(addr));
@@ -333,6 +414,30 @@ bool Client::TryConnect() {
             socket_fd_ = -1;
         } else {
             close(fd);
+        }
+
+        return false;
+    };
+
+    // If DISCORD_IPC_PATH points directly to a socket file, try it first
+    const char* custom_path = getenv("DISCORD_IPC_PATH");
+    if (custom_path && custom_path[0]) {
+        struct stat st;
+        if (stat(custom_path, &st) == 0 && S_ISSOCK(st.st_mode)) {
+            if (attempt_connect(custom_path)) {
+                return true;
+            }
+        }
+    }
+
+    std::vector<std::string> dirs = GetSocketDirectories();
+
+    for (const auto& base_dir : dirs) {
+        for (int i = 0; i < 10; ++i) {
+            std::string sock_path = base_dir + "/discord-ipc-" + std::to_string(i);
+            if (attempt_connect(sock_path)) {
+                return true;
+            }
         }
     }
 

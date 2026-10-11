@@ -36,6 +36,9 @@ jobs:
       - name: Build ReaCord
         run: cmake --build build --config Release --verbose
 
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure -C Release --verbose
+
       - name: Codesign Binary (macOS)
         if: matrix.os == 'macos-latest'
         run: |

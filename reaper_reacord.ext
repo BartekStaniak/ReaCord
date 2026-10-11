@@ -1,15 +1,11 @@
 @description ReaCord: Ultra-lightweight Discord Rich Presence for REAPER
 @author Bartek Staniak
-@version 1.0.4
+@version 1.0.5-beta1
 @changelog
-  + Production Release v1.0.4
-  + Event-driven transport updates via IReaperControlSurface (zero-latency Play/Pause/Stop/Record)
-  + Universal macOS binary (Apple Silicon & Intel) with SWELL modstub linkage and ad-hoc codesigning
-  + Linux 64-bit support with SWELL dynamic host API resolution
-  + Extensions menu hook across all platforms (Win32 & SWELL)
-  + Modern ReaImGui settings interface with live Discord profile card preview and instant Apply badge
-  + Fixed Default ID button horizontal clipping and balanced cross-platform action buttons
-  + Granular privacy controls: project name masking, project timers (ExtState/uptime), and Incognito mode
+  + Linux Flatpak & Snap auto-discovery: detect Discord IPC sockets across Flatpak (official, Canary, PTB, Vesktop, ArmCord, etc.) and Snap
+  + POSIX fast stat socket verification (eliminates timeouts and connection lag)
+  + Custom DISCORD_IPC_PATH environment variable support for non-standard socket layouts
+  + Production Release v1.0.4 features: event-driven transport, SWELL dynamic resolution, modern ReaImGui interface
 @provides
   [win64] reaper_reacord64.dll
   [darwin64] reaper_reacord.dylib

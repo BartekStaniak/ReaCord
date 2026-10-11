@@ -66,6 +66,12 @@ Because audio performance comes first, all presence updates run on a detached wo
 4. Drop the downloaded binary into `UserPlugins`.
 5. Restart REAPER.
 
+> [!TIP]
+> **Linux (Flatpak & Snap Discord)**: ReaCord natively auto-discovers Discord IPC sockets across standard distributions, Flatpak (`com.discordapp.Discord`, Vesktop, ArmCord, etc.), and Snap out of the box—no manual symlinks or `systemd-tmpfiles` hacks needed. If you run REAPER itself inside a Flatpak container (`fm.reaper.Reaper`), simply allow access to Discord's runtime socket in Flatseal (`xdg-run/app/com.discordapp.Discord`) or run:
+> ```bash
+> flatpak override --user --filesystem=xdg-run/app/com.discordapp.Discord fm.reaper.Reaper
+> ```
+
 ---
 
 ## Configuration
